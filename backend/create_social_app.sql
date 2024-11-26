@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS `friends` (
   `user_id_2` INT NOT NULL,
   `created_at` DATETIME NULL DEFAULT now(),
   `status` ENUM('pending', 'accepted', 'blocked') NOT NULL DEFAULT 'pending',
-  UNIQUE (`user_id_1`, `user_id_2`),
   INDEX `fk_friends_user1_idx` (`user_id_1`),
   INDEX `fk_friends_user2_idx` (`user_id_2`),
   CONSTRAINT `fk_friends_user1`
