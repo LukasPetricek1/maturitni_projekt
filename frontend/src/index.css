@@ -2,6 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+body{ 
+  background-image: url("./assets/background.png");
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+.registration-background{ 
+  position:relative;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("./assets/registration-background.jpg");
+  background-position:center;
+  background-size:cover
+}
+
+ul{ 
+  list-style-type: disc
+}
+
 img{ 
   user-select: none;
+}
+
+nav{ 
+  margin-top:0rem
+}
+
+button{ 
+  transition:0.2s
+}
+
+button:hover{ 
+  cursor:pointer;
+  transform: scale(1.1);
+}
+
+.scrollbar-disabled {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.scrollbar-disabled::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+/* Pro Webkit-based prohlížeče (Chrome, Edge) */
+*::-webkit-scrollbar-button {
+  display: none; /* Skryje šipky nahoru/dolů */
+}
+
+/* Zbytek custom scrollbar stylování */
+*::-webkit-scrollbar {
+  width: 8px; /* Tenký scrollbar */
+  border-radius: 20px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #9f7aea; /* Fialová barva */
+  border-radius: 20px; /* Zaoblení scrollbar */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #805ad5; /* Tmavší fialová při hover */
+}
+
+*::-webkit-scrollbar-track {
+  background-color: transparent; /* Průhledné pozadí */
+}
+
+/* Pro Firefox (šipky se odstraní automaticky, pokud není použit žádný obsah navíc) */
+* {
+  scrollbar-width: thin; /* Tenký scrollbar */
+  scrollbar-color: #9f7aea transparent; /* Barva scrollbar a pozadí */
 }

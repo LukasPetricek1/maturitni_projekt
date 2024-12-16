@@ -13,7 +13,7 @@ interface UserInputProps  {
 const UserInput: React.FC<UserInputProps> = ({ type = "text", label , name , id, value, onChange, ...props }) => {
   return (
     <div className="mb-4">
-      <label htmlFor={name} className="block text-gray-300 text-sm mb-2">
+      <label htmlFor={id} className="block text-gray-300 text-sm mb-2">
         {label}
       </label>
       <input

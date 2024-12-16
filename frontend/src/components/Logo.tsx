@@ -14,7 +14,7 @@ const Logo: React.FC<LogoProps> = ({ title , scale}) => {
     <Link to="/">
       <div className="flex items-center space-x-3">
         <img
-          src="/logo.png" // Změň cestu na skutečnou cestu k obrázku
+          src="/logo.png"
           alt="Fadigram Logo"
           style={{ height : 40 * imageScale , width : 40 * imageScale}}
         />

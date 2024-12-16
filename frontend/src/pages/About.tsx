@@ -14,11 +14,6 @@ const MoreInfoPage = () => {
         "Inspirujte ostatní svými momenty a čerpejte inspiraci od svých přátel.",
       icon: "📸",
     },
-    // {
-    //   title: "Plánování událostí",
-    //   description: "Zorganizujte výlety, schůzky a aktivity snadno a rychle.",
-    //   icon: "📅",
-    // },
     {
       title: "Privátní chaty a skupiny",
       description:
@@ -39,7 +34,7 @@ const MoreInfoPage = () => {
   ];
 
   return (
-    <div className="relative min-h-screen text-gray-800">
+    <div className="relative min-h-full text-gray-800">
       <header className=" text-white py-16 text-center">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-purple-600">
           Více informací o naší aplikaci

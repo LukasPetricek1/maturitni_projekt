@@ -31,6 +31,7 @@ const Modal = forwardRef<DialogHandle, ModalProps>(
       if(instant){
         setTimeout(() => {
           dialog.current!.showModal()
+          document.body.style.overflowY = "hidden"
         }, 2000);
       }
     } , [instant])
@@ -45,7 +46,6 @@ const Modal = forwardRef<DialogHandle, ModalProps>(
     }));
     return createPortal(
       <>
-        return (
         <dialog
           ref={dialog}
           className="rounded-lg shadow-2xl shadow-black p-6 bg-gray-100 text-center text-gray-800 w-64"
@@ -66,7 +66,6 @@ const Modal = forwardRef<DialogHandle, ModalProps>(
             </button>
           </div>
         </dialog>
-        );
       </>,
       document.getElementById("root-modal")!
     );
