@@ -20,6 +20,8 @@ insta<span style="color:red">GRAM</span>
 
 ---
 
+**```/frontend/src/data```**
+* V této složce se nacházejí vygenerovaná základní data, která jsem využil pro ilustraci designu aplikace
 
 ## Instalace
 
