@@ -1,16 +1,12 @@
-var express = require('express');
-var router = express.Router();
+const express = require("express")
+const router = express.Router()
 
-const connection = require("../mysql/connection")
-const { USERS_QUERY } = require("../mysql/queries")
+const UserController = require("../controllers/users")
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get("/" , UserController.getAllUsers)
 
-  connection.query(USERS_QUERY , function(err, result){
-    if(err) console.log(err)
-    res.json(result)
-  })
-});
+router.get("/:username" , UserController.getUser)
+
+router.get("/:username/friends" , UserController.getUserFriends)
 
 module.exports = router;

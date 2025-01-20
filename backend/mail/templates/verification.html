@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Single Sender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            margin-bottom: 20px;
+        }
+        .email-header img {
+            width: 150px;
+            max-width: 100%;
+            height: auto;
+        }
+        .email-content {
+            color: #333;
+        }
+        .email-content h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .email-content p {
+            margin: 10px 0;
+        }
+        .email-button {
+            margin-top: 20px;
+        }
+        .email-button a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #0073e6;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: inline-block;
+        }
+        .email-footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #888;
+        }
+        .email-footer a {
+            color: #0073e6;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                padding: 15px;
+                border-radius: 5px;
+            }
+            .email-content h1 {
+                font-size: 18px;
+            }
+            .email-button a {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="email-container">
+    <div class="email-header">
+        <img src="https://sendgrid.com/brand/sg-twilio-lockup.svg" alt="SendGrid">
+    </div>
+    <div class="email-content">
+        <h1>Ověříme jestli se jedná opravdu o Vás a patří Vám adresa: </h1>
+        <a href="mailto:lukas.petricek.business@gmail.com"><strong>lukas.petricek.business@gmail.com</strong></a>
+        <p>Váš odkaz je aktivní po dobu 48 hodin. Po uplynutí této doby je třeba znovu odeslat ověřovací e-mail.</p>
+    </div>
+    <div class="email-button">
+        <a href="#">Ověřit</a>
+    </div>
+    </div>
+</body>
+</html>
