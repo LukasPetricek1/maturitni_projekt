@@ -1,10 +1,17 @@
 const mysql = require("mysql2")
+const options = require("./db/config")
 
-const connection = mysql.createConnection({ 
-    host : "localhost",
-    user : process.env.USER_NAME,
-    password : process.env.PASSWORD,
-    database : "social_app"
-})
+const connectDB = async () => { 
+    const pool = mysql.createPool(options)
 
-module.exports = connection;
+    pool.getConnection(function(err, connection){ 
+        if(err){
+            console.log({ error : err.message})
+        }
+
+        console.log("Connected to MySQL")
+        connection.release()
+    })
+}
+
+module.exports = connectDB;
