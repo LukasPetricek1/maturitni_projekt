@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent , useRef } from "react";
 import { Link , useSearchParams , useLoaderData , Navigate } from "react-router-dom";
+import axios from "axios"
 
 import UserInput from "../components/UserInput";
 import AlternativeSign from "../components/AlternativeSign";
@@ -9,6 +10,17 @@ import Modal , { DialogHandle } from "../components/Modal";
 import ProfilePhotoUpload from "../components/signup-steps/ProfilePhotoUpload";
 import AddUserInfo from "../components/signup-steps/AddUserInfo" 
 import WelcomeScreen from "../components/signup-steps/Welcome";
+
+const domain = "http://localhost:3000"
+
+axios.post(domain + "/register" , { 
+  username : "lukas_petricekss",
+  name : "lukasss",
+  email : "petricek.lukiss@seznam.cz",
+  password : "123456ss"
+})
+  .then(response => console.log(response))
+  .catch(err => err && console.log(err))
 
 interface FormData {
   name: string;

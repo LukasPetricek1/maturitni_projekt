@@ -14,32 +14,35 @@ const generateAccessToken = (userId) => {
 };
 
 const register = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password , name , username} = req.body;
 
-    if (!email || !password) {
-      res
-        .status(400)
-        .json({ error: "Email or Password fields cannot be empty!" });
+    if (!email || !password || !name || !username) {
+      res.status(400)
+        if(!email) res.json({ error : "Email cannot be empty"})
+        else if(!password) res.json({ error : "Password cannot be empty"})
+        else if(!username) res.json({ error : "Username cannot be empty"})
+        else if(!name) res.json({ error : "Name cannot be empty"})
       return;
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+
     const user = {
-      userId: uuidv4(),
+      id: uuidv4(),
       email,
       password: hashedPassword,
+      username,
+      name
     };
-
-    console.log(user)
 
     try {
       await createTable(userSchema);
-      const userAlreadyExists = await checkRecordExists("users_test", "email", email);
+      const userAlreadyExists = await checkRecordExists("users", "email", email);
       if (userAlreadyExists) {
         res.status(409).json({ error: "Email already exists" });
       } else {
-        await insertRecord("users_test", user);
+        await insertRecord("users", user);
         res.status(201).json({ message: "User created successfully!" });
       }
     } catch (error) {
