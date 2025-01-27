@@ -1,7 +1,7 @@
-const USERS_QUERY = "SELECT id, theme_picture, profile_picture, username, name, email, website FROM users";
-const USER_QUERY = (identifier) => `SELECT id, theme_picture, profile_picture, username, name, email, website FROM users WHERE username = '${identifier}' OR id = '${identifier}'`
+const ALL_USERS = "SELECT id, theme_picture, profile_picture, username, name, email, website FROM users";
+const USER = (identifier) => `SELECT id, specific_id, theme_picture, profile_picture, username, name, email, website, bio, status FROM users WHERE username = '${identifier}' OR specific_id = '${identifier}'`
 
 module.exports = {
-    USERS_QUERY,
-    USER_QUERY
+    USER,
+    ALL_USERS
 }

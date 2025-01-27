@@ -7,7 +7,7 @@ const UnSignedHome: React.FC = () => {
   return (
     <>
 
-      <div className="relative w-full h-screen">
+      <div className="relative w-screen h-screen">
         <video
           className="absolute top-0 left-0 w-full h-full object-cover"
           autoPlay
@@ -15,7 +15,7 @@ const UnSignedHome: React.FC = () => {
           muted
         >
           <source src={VideoBackground} type="video/mp4" />
-          Váš prohlížeč nepodporuje video. 😂
+          Váš prohlížeč nepodporuje video.
         </video>
 
         <div className="absolute top-0 left-0 w-full h-full bg-black/80"></div>

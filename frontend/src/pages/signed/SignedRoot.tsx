@@ -1,59 +1,99 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
-
+import React, { useLayoutEffect, useState } from "react";
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import MainNavBar from "../../components/MainNavBar";
 import Aside from "../../components/Aside";
-
-const NAV_BANNED_PATHS = ["stories"];
+import { useDispatch } from "react-redux";
+import { login } from "../../redux-store/auth";
+import axiosInstance from "../../axios/instance";
+import { userProps } from "../Profile";
+// import { login } from "../../redux-store/auth";
 
 const SignedRoot: React.FC = () => {
   const location = useLocation();
+  const [userInfo, setUserInfo] = useState<userProps>({
+    bio: "",
+    email: "",
+    id: 0,
+    name: "",
+    specific_id: "",
+    status: "",
+    username: "",
+    website: "",
+  });
+  // const loader = useLoaderData() as authProps || { err : string };
 
-  const [navIsBanned, setNavIsBanned] = useState(false);
+  // useEffect(() => {
+  //   if(loader.err){
 
+  //   }else{
+  //     dispatch(login(loader))
+  //   }
+  // } , [dispatch, loader])
 
-  useEffect(() => {
-    if (
-      NAV_BANNED_PATHS.some((bannedPath) =>
-        window.location.pathname.includes(bannedPath)
-      )
-    ) {
-      setNavIsBanned(true);
-    } else {
-      setNavIsBanned(false);
-    }
-  }, [location.pathname]);
+  // const loader = useLoaderData() as authProps;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useLayoutEffect(() => {
+    axiosInstance
+      .get("/verify")
+      .then((response) => {
+        if (response.statusText === "OK") {
+          setUserInfo(response.data);
+          const { username, name, email, id, website, bio } = response.data;
+          dispatch(
+            login({
+              isAuth : true,
+              credentials: { username, name, email },
+              userInfo: { id, website, bio, hobbies: [] },
+            })
+          );
+        }
+      })
+      .catch((err) => {
+        if (!err.ok) {
+          navigate("/");
+        }
+      });
+    // console.log(loader)
+    // if((loader as AxiosError).isAxiosError){
+    //   console.log("unloged")
+    //   setLogged(false)
+    // }else{
+    //   setLogged(true)
+    //   dispatch(login(loader))
+    // }
+  }, []);
 
   const chat = location.pathname.includes("chat");
 
-  
-    if (navIsBanned) {
-      return (
-        <>
-          <main>
-            <Outlet />
-          </main>
-        </>
-      );
-    }
+  const ASIDE_BANNED_PATHS = ["stories"];
 
-    return (
-      <section className="grid grid-cols-24">
-        {!location.pathname.includes("chat") && <MainNavBar auth={true} />}
+  return (
+    <section className="grid grid-cols-24">
+      <MainNavBar />
 
-        <div
-          style={{ gridColumn: `span ${chat ? 1 : 4}` }}
-          className={`h-screen sticky top-0 ${!chat && "-mt-16"}`}
-        >
-          <Aside />
-        </div>
-        <div style={{ gridColumn: `span ${chat ? 23 : 20}` }}>
-          <Outlet />
-        </div>
-      </section>
-    );
-  
+      {userInfo.id !== 0 &&
+        !ASIDE_BANNED_PATHS.some((bannedPath) =>
+          window.location.pathname.includes(bannedPath)
+        ) && (
+          <div
+            style={{ gridColumn: `span ${chat ? 1 : 4}` }}
+            className={`h-screen sticky top-0 ${!chat && "-mt-16"}`}
+          >
+            <Aside username={userInfo && userInfo.username} />
+          </div>
+        )}
+      <div style={{ gridColumn: `span ${chat ? 23 : 20}` }}>
+        <Outlet />
+      </div>
+    </section>
+  );
 };
 
 export default SignedRoot;

@@ -1,44 +1,50 @@
 import React, { useState, ChangeEvent, FormEvent , useRef } from "react";
-import { Link , useSearchParams , useLoaderData , Navigate } from "react-router-dom";
-import axios from "axios"
+import { Link , useSearchParams , useLoaderData , Navigate , useNavigate } from "react-router-dom";
+// import axios from "axios"
+
+import { useDispatch} from "react-redux";
+import { register } from "../redux-store/auth";
 
 import UserInput from "../components/UserInput";
 import AlternativeSign from "../components/AlternativeSign";
 import Logo from "../components/Logo";
-import Modal , { DialogHandle } from "../components/Modal";
+// import Modal , { DialogHandle } from "../components/Modal";
+// import Toast from "../components/Toast";
 
 import ProfilePhotoUpload from "../components/signup-steps/ProfilePhotoUpload";
 import AddUserInfo from "../components/signup-steps/AddUserInfo" 
 import WelcomeScreen from "../components/signup-steps/Welcome";
+import PasswordCheck from "./PasswordCheck";
 
-const domain = "http://localhost:3000"
 
-axios.post(domain + "/register" , { 
-  username : "lukas_petricekss",
-  name : "lukasss",
-  email : "petricek.lukiss@seznam.cz",
-  password : "123456ss"
-})
-  .then(response => console.log(response))
-  .catch(err => err && console.log(err))
+// const domain = "http://localhost:3000"
 
 interface FormData {
   name: string;
   username: string;
   email: string;
   password: string;
+  specific_id? : string
 }
 
-interface LoaderProps{ 
+export interface LoaderProps{ 
   ["user-credentials"] : FormData | null;
 }
 
 const Signup: React.FC = () => {
-  const modal = useRef<DialogHandle>(null);
+  // const navigate = useNavigate()
+  // const modal = useRef<DialogHandle>(null);
 
-  const loader_data  = useLoaderData() as LoaderProps;
+  // const loader_data  = useLoaderData() as LoaderProps;
+  // const has_recorded_id = localStorage.getItem("user-id")
 
+  // const userInfo = useSelector<RootState>(state => state.auth)
+  const dispatch = useDispatch()
+
+  // const [showToast, setShowToast] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [secondPassword, setSecondPassword] = useState("")
+  const [validPassword, setValidPassword] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     name: "",
     username: "",
@@ -52,26 +58,44 @@ const Signup: React.FC = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setDidEdit(true)
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: name === "name" ? value : value.trim() });
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+    if(validPassword && formData.password === secondPassword){ 
     
-    localStorage.setItem("user-credentials" , JSON.stringify(formData))
-    setSearchParams({ step : "upload-profile-picture"})
+      dispatch(register(formData))
+
+      setSearchParams({ step : "upload-profile-picture"})
+    }else{ 
+      if(!validPassword){ 
+        alert("Vaše heslo nesplňuje daná kritéria.")
+      }
+      alert("Vaše hesla se neshodují.")
+    }
   };
 
-  const handleCancel = () => { 
-      modal.current!.close()
-  }
+  // const handleCancel = () => { 
+  //     modal.current!.close()
+  // }
 
-  const handleConfirm = () => {
-    if(loader_data && loader_data["user-credentials"]){ 
-      setFormData(loader_data["user-credentials"])
-    }
-    handleCancel()
-  }
+  // const handleConfirm = async () => {
+  //   // const { email , username, name } = loader_data["user-credentials"]!
+  //   // await dispatch(register({ name , username , email }))
+
+  //   navigate("/login")
+  //   // navigate("/login")
+  //   // if(loader_data && loader_data["user-credentials"]){ 
+  //   //   setFormData(prev => {
+  //   //     return {
+  //   //       ...prev,
+  //   //       ...loader_data["user-credentials"]
+  //   //     }
+  //   //   })
+  //   // }
+  //   // handleCancel()
+  // }
 
   if(searchParams.size > 0 && !ValidFormData){
     return <Navigate to="/signup" />
@@ -96,7 +120,8 @@ const Signup: React.FC = () => {
 
   return (
     <>
-    {!didEdit && !ValidFormData && loader_data["user-credentials"] && <Modal
+    {/* {showToast && <Toast type="success" duration={2000} message="Přihlášení proběhlo úspěšně." onClose={() => setShowToast(false)} />} */}
+    {/* {!didEdit && !ValidFormData && <Modal
         ref={modal}
         onCancel={handleCancel}
         onConfirm={handleConfirm}
@@ -106,12 +131,12 @@ const Signup: React.FC = () => {
       >
         <>
           <p className="mb-2 text-lg font-medium">
-            Přejete si načíst poslední data?
+            Přejete se přihlásit ?
           </p>
-          <p className="mb-4 text-gray-600">pro</p>
-          <p className="mb-6 text-gray-800 font-semibold">{loader_data["user-credentials"] && loader_data["user-credentials"].username}</p>
+          <p className="mb-4 text-gray-600">jako</p>
+          <p className="mb-6 text-gray-800 font-semibold">{loader_data["user-credentials"] && loader_data["user-credentials"].email}</p>
         </>
-      </Modal>}
+      </Modal>} */}
     <div className="flex items-center justify-center h-full">
       <div className="flex w-11/12 max-w-5xl h-4/5 bg-gray-900 rounded-lg shadow-lg overflow-hidden">
         
@@ -126,7 +151,7 @@ const Signup: React.FC = () => {
         </div>
 
         
-        <div className="flex flex-1 flex-col justify-center p-8">
+        <div className="flex flex-1 flex-col justify-start p-8 overflow-y-scroll">
           <form
             onSubmit={handleSubmit}
             className="w-full max-w-md mx-auto"
@@ -139,6 +164,7 @@ const Signup: React.FC = () => {
               placeholder="Vaše jméno"
               value={formData.name}
               onChange={handleChange}
+              maxLength={30}
             />
             <UserInput
               label="Uživatelské jméno"
@@ -147,6 +173,7 @@ const Signup: React.FC = () => {
               placeholder="Vaše uživatelské jméno"
               value={formData.username}
               onChange={handleChange}
+              maxLength={15}
             />
             <UserInput
               type="email"
@@ -156,15 +183,22 @@ const Signup: React.FC = () => {
               placeholder="Váš email"
               value={formData.email}
               onChange={handleChange}
+              maxLength={100}
+            />
+            <PasswordCheck 
+              setValid={setValidPassword}
+              value={formData.password}
+              setValue={e => setFormData(prev => { return { ...prev, password : e.target.value}})}
             />
             <UserInput
               type="password"
-              label="Vaše heslo"
-              id="password"
-              name="password"
+              label="Zadejte heslo ještě jednou"
+              id="password2"
+              name="password2"
               placeholder="Vaše heslo"
-              value={formData.password}
-              onChange={handleChange}
+              value={secondPassword}
+              onChange={e => setSecondPassword(e.target.value.trim())}
+              maxLength={30}
             />
             <button
               type="submit"
@@ -191,14 +225,3 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
-
-export async function loader(){ 
-  let userCredentials = localStorage.getItem("user-credentials") || null;
-  if(userCredentials){
-    userCredentials = JSON.parse(userCredentials)
-  }
-
-  return {
-    "user-credentials" : userCredentials || null
-  }
-}

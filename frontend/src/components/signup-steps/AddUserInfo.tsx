@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addUserInfo } from "../../redux-store/auth";
 
 import { IoIosClose as DeleteIcon } from "react-icons/io";
 
@@ -6,12 +8,16 @@ interface Props {
   onComplete: () => void;
 }
 
-interface HobbiesProps {
+export interface HobbiesProps {
   all_hobbies: string[];
   current_hobby: string;
 }
 
 const BioForm: React.FC<Props> = ({ onComplete }) => {
+
+  const dispatch = useDispatch()
+
+  const [ website, setWebsite] = useState<string>("")
   const [bio, setBio] = useState<string>("");
   const bioMaxLength = 200;
   const [hobbies, setHobbies] = useState<HobbiesProps>({
@@ -22,6 +28,12 @@ const BioForm: React.FC<Props> = ({ onComplete }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    dispatch(addUserInfo({
+      bio : bio,
+      hobbies : hobbies.all_hobbies,
+      website : website
+    }))
+    
     onComplete();
   };
 
@@ -76,6 +88,8 @@ const BioForm: React.FC<Props> = ({ onComplete }) => {
             id="personalPage"
             className="w-full px-3 py-2 rounded-md bg-transparent text-white border-b-purple-500 border-b-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
             placeholder="Vaše osobní stránka"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
           />
         </div>
         <div className="mb-6">

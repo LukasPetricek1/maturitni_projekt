@@ -1,6 +1,7 @@
 const userSchema = `
     CREATE TABLE IF NOT EXISTS users (
-    id VARCHAR(255) NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
+    specific_id VARCHAR(255) NOT NULL UNIQUE,
     theme_picture VARCHAR(255) NULL,
     profile_picture VARCHAR(255) NULL,
     username VARCHAR(45) NOT NULL,

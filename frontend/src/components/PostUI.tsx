@@ -32,13 +32,13 @@ const PostUI: React.FC<PostPageProps> = ({ postData , extended }) => {
         key={postData.id}
         className={`relative w-full aspect-square p-4 bg-gray-100 rounded-lg shadow-md transition ${!extended && "hover:bg-purple-200"}`}
       >
-        <Link
+        {extended && <Link
           to={`/profile/${postData.username}`}
           className="flex w-full text-black items-center gap-5 p-2 pl-0 m-2 origin-left hover:scale-105 cursor-pointer transition"
         >
           <div className="h-10 aspect-square rounded-full bg-gray-500"></div>
           <h1>{postData.username}</h1>
-        </Link>
+        </Link>}
 
         <h2 className="font-bold text-gray-600">
           {postData.title || "Obrázek bez popisu"}

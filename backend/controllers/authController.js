@@ -1,20 +1,51 @@
 const { v4 : uuidv4 } = require("uuid")
 const jwt = require("jsonwebtoken")
-const userSchema = require("./mysql/schemas/userSchema")
+const userSchema = require("../mysql/schemas/userSchema")
 const bcrypt = require("bcryptjs")
 
 const {
     createTable,
     checkRecordExists,
     insertRecord,
-  } = require("./mysql/functions/index");
+  } = require("../mysql/functions/index");
 
-const generateAccessToken = (userId) => {
-    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+const generateAccessToken = (email) => {
+    return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
+const token = (req, res) => {
+  const { email } = req.body;
+
+}
+
+const verify = async (req, res) => { 
+  const { jwt_token } = req.cookies
+
+  if(jwt_token){ 
+    const verify = jwt.verify(jwt_token , process.env.JWT_SECRET)
+  
+    if(verify){ 
+      const existingUser = await checkRecordExists("users", "email", verify.email);
+      res.json(existingUser)
+    }else{
+      res.status(401).json({ error : "unauthorized"})
+    }
+  }else{ 
+    res.status(401).json({ error : "missing access token"})
+  }
+}
+
+const logout = (req, res) => { 
+  res.clearCookie("jwt_token" , { httpOnly : true})
+
+  res.send("Cookie cleared")
+}
+
 const register = async (req, res) => {
-    const { email, password , name , username} = req.body;
+    const { credentials , userInfo } = req.body;
+
+    const { email , password, name , username } = credentials 
+    const { bio , website , hobbies } = userInfo
 
     if (!email || !password || !name || !username) {
       res.status(400)
@@ -29,11 +60,14 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = {
-      id: uuidv4(),
+      specific_id: uuidv4(),
       email,
       password: hashedPassword,
       username,
-      name
+      name,
+      bio,
+      website
+
     };
 
     try {
@@ -43,7 +77,7 @@ const register = async (req, res) => {
         res.status(409).json({ error: "Email already exists" });
       } else {
         await insertRecord("users", user);
-        res.status(201).json({ message: "User created successfully!" });
+        res.status(201).json({ message: "User created successfully!" , id : user.specific_id});
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -61,7 +95,7 @@ const register = async (req, res) => {
     }
   
     try {
-      const existingUser = await checkRecordExists("users_test", "email", email);
+      const existingUser = await checkRecordExists("users", "email", email);
   
       if (existingUser) {
         if (!existingUser.password) {
@@ -75,10 +109,17 @@ const register = async (req, res) => {
         );
   
         if (passwordMatch) {
+
+          const access_token = generateAccessToken(existingUser.email)
+
+          const { email , password, name , username } = existingUser 
+          const { bio , website , hobbies , id } = existingUser
+
+          res.cookie("jwt_token" , access_token , { httpOnly : true , maxAge : 1000 * 60 * 60 * 24})
+
           res.status(200).json({
-            userId: existingUser.userId,
-            email: existingUser.email,
-            access_token: generateAccessToken(existingUser.userId),
+            credentials : { email , password , name , username },
+            userInfo : { bio , website, hobbies, id}
           });
         } else {
           res.status(401).json({ error: "Invalid credentials" });
@@ -94,4 +135,7 @@ const register = async (req, res) => {
   module.exports = {
     register,
     login,
+    token,
+    verify,
+    logout
   };

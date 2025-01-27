@@ -1,21 +1,45 @@
 import React from "react";
 
 import ListOfFriends from "../../components/ListOfFriends";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLoaderData, useSearchParams } from "react-router-dom";
 
 import Post from "../../components/Post";
 
 import { stories } from "../../data/stories";
 import { friendsData } from "../../data/friendsData";
-import { postsData } from "../../data/posts";
+// import { postsData } from "../../data/posts";
 import { articles } from "../../data/articles";
 
 import Article from "../../components/Article";
+import UnSignedHome from "../unsigned/HomePage";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux-store";
+
+interface postDataProps {
+  id: number;
+  username: string;
+  title: string;
+  description: string;
+  contentType: "image" | "video";
+  contentSrc: string;
+  date: string;
+  likes: number;
+  comments: number;
+}
 
 const POSSIBLE_SECTIONS = ["příspěvky", "články"];
 
 const SignedHome: React.FC = () => {
+  
   const [activeView, setActiveView] = useSearchParams();
+  const loader = useLoaderData() as postDataProps[];
+  const logged =useSelector<RootState>(state => state.auth.isAuth)
+
+  if(!logged){ 
+    return <UnSignedHome />
+  }
+
+  
   const activeSection = activeView.get("view");
 
   const handleCurrentSection = (section: string) => {
@@ -68,7 +92,7 @@ const SignedHome: React.FC = () => {
         
             {(activeSection === "příspěvky" || activeSection === null) && (
               <div className="grid grid-cols-3 gap-10">
-                {postsData.map((post) => (
+                {loader && loader.map((post) => (
                   <Post key={post.id} extended={false} post={post} />
                 ))}
               </div>

@@ -7,18 +7,23 @@ import { IoMdNotificationsOutline as NotifyIcon , IoIosAddCircleOutline  as Crea
 import { MdOutlinePersonSearch as SearchIcon } from "react-icons/md";
 import { RiAccountCircleLine as AccountIcon } from "react-icons/ri";
 
-const AsideLinks = [
-  { to : "/" , name : "Domů" , icon : <FaHome />},
-  { to : "/chat" , name : "Komunikace" , icon : <ChatIcon />},
-  { to : "/notifications" , name : "Upozornění" , icon : <NotifyIcon />},
-  { to : "/create" , name : "Vytvořit", icon : <CreateIcon />},
-  { to : "/discover/users" , name : "Objevit" , icon : <SearchIcon />},
-  { to : "/profile/lukas_petricek_" , name : "Profil", icon : <AccountIcon/>}
-]
+interface Props{ 
+  username : string
+}
 
-const Aside : React.FC = () => { 
+const Aside : React.FC<Props> = ({ username }) => { 
 
   const location = useLocation()
+  
+
+  const AsideLinks = [
+    { to : "/" , name : "Domů" , icon : <FaHome />},
+    { to : "/chat" , name : "Komunikace" , icon : <ChatIcon />},
+    { to : "/notifications" , name : "Upozornění" , icon : <NotifyIcon />},
+    { to : "/create" , name : "Vytvořit", icon : <CreateIcon />},
+    { to : "/discover/users" , name : "Objevit" , icon : <SearchIcon />},
+    { to : `/profile/${username}` , name : "Profil", icon : <AccountIcon/>}
+  ]
 
   return (
     <aside className={`bg-black/50 text-white text-xl h-full flex flex-col items-center justify-center gap-5`}>

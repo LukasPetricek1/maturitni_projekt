@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, Outlet, useLocation } from "react-router-dom";
+import { useParams, Outlet, useLocation, useLoaderData } from "react-router-dom";
 
 import { LuSendHorizonal as SendIcon } from "react-icons/lu";
 import { FaPlus as CreateIcon } from "react-icons/fa";
@@ -11,19 +11,49 @@ import { Link } from "react-router-dom";
 
 import Post from "../components/Post";
 
-import { postsData } from "../data/posts";
 import { articles } from "../data/articles";
 import { stories } from "../data/stories";
 import Article from "../components/Article";
 
 import AccountSettings from "../components/AccountSettings";
+import axiosInstance from "../axios/instance";
 
 const interests = ["Programming", "Chess", "Social-Media"];
+
+export interface userProps{ 
+  email : string;
+  id: number;
+  specific_id : string;
+  name : string;
+  profile_picture? : string ;
+  theme_picture? : string; 
+  username : string ;
+  website: string;
+  status : string;
+  bio : string;
+}
+
+interface postDataProps {
+  id: number;
+  username: string;
+  title: string;
+  description: string;
+  contentType: "image" | "video";
+  contentSrc: string;
+  date: string;
+  likes: number;
+  comments: number;
+}
 
 const Profile: React.FC = () => {
   const { account_id } = useParams();
   const [visibleAboutMe, setShowAboutMe] = useState(false);
   const [visibleSettings, setShowSettings] = useState(false)
+
+  const [posts, setPosts] = useState<postDataProps | []>([])
+
+  const user = useLoaderData() as userProps;
+
 
   const showAboutMe = () => {
     setShowAboutMe(true);
@@ -41,6 +71,17 @@ const Profile: React.FC = () => {
     setShowSettings(false);
   };
 
+  useEffect(() => { 
+    axiosInstance.get(`/users/posts?user_id=${user.id}`)
+    .then(response => {
+      if(Object.getPrototypeOf(response.data) == Array.prototype){
+        setPosts(response.data)
+        console.log(response.data)
+      }
+    })
+    .catch(err => console.log(err))
+  }, [])
+
   
 
   return (
@@ -54,11 +95,9 @@ const Profile: React.FC = () => {
                 O mně
               </h2>
               <div className="text-blue-500 mb-5">
-                <a href="https://lukas-petricek.com">https://www.lukas-petricek.com</a>
+                <a href={user.website}>{user.website}</a>
               </div>
-              <p className="text-gray-700 text-sm">
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-              </p>
+              <p className="text-gray-700 text-sm">{user.bio}</p>
               <section className="w-full flex justify-end">
                 <button
                   onClick={hideAboutMe}
@@ -76,7 +115,7 @@ const Profile: React.FC = () => {
         )}
 
         {visibleSettings && (
-          <AccountSettings onClose={hideSettings} />
+          <AccountSettings onClose={hideSettings} currentData={user} />
         )}
 
         <div
@@ -111,7 +150,7 @@ const Profile: React.FC = () => {
         </div>
 
         <div className="text-blue-500">
-          <a href="https://lukas-petricek.com">https://www.lukas-petricek.com</a>
+          <a href={user.website}>{user.website}</a>
         </div>
 
         {location.pathname.includes("friends") ? (
@@ -137,7 +176,7 @@ const Profile: React.FC = () => {
             </div>
 
             <div className="mt-5 w-1/2 flex flex-col items-center">
-              <SubNavigation username={account_id!} />
+              <SubNavigation username={account_id!} posts={posts} />
             </div>
           </>
         )}
@@ -184,7 +223,7 @@ const SavedStories: React.FC = () => {
   );
 };
 
-const SubNavigation: React.FC<{ username: string }> = ({ username }) => {
+const SubNavigation: React.FC<{ username: string , posts :[] | postDataProps[]}> = ({ username , posts }) => {
   const location = useLocation();
   const activeSection = useRef<string | null>(
     location.hash && location.hash.match(/\w+/g)![0]
@@ -220,16 +259,13 @@ const SubNavigation: React.FC<{ username: string }> = ({ username }) => {
         {activeTab === "posts" && (
           <section className="grid grid-cols-2 gap-5 p-5">
             {(() => {
-              const userPosts = postsData.filter(
-                (post) => post.username === username
-              );
-              if (!userPosts.length)
+              if (!posts.length)
                 return (
                   <p className="text-gray-500 text-2xl text-nowrap">
                     <b>{username}</b> zatím nepřidal/a žádné příspěvky. ☹️
                   </p>
                 );
-              return userPosts.map((post) => (
+              return posts.map((post) => (
                 <Post key={post.id} extended={false} post={post} />
               ));
             })()}

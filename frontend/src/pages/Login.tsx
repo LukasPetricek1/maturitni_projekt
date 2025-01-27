@@ -1,25 +1,43 @@
-import React, { useState , useEffect } from "react";
-import { Link } from "react-router-dom"
+import React, { useState   } from "react";
+import { Link, useNavigate  } from "react-router-dom"
 
 
 import UserInput from "../components/UserInput";
 import AlternativeSign from "../components/AlternativeSign";
 import Logo from "../components/Logo";
+import { useDispatch, useSelector } from "react-redux";
+import { authProps, login } from "../redux-store/auth";
+import axiosInstance from "../axios/instance";
+import { RootState } from "../redux-store";
 
 const Login: React.FC = () => {
+  const navigate = useNavigate()
+  const auth = useSelector(( state : RootState) => state.auth as authProps).isAuth;
+  const dispatch = useDispatch()
   const [userData, setUserData] = useState({
     login: "",
     password: "",
   });
 
-  useEffect(() => { 
-    
-  } , [userData])
+  if(auth){
+    navigate("/")
+  }
+
 
   const loginSubmited = (e : React.FormEvent) => { 
     e.preventDefault()
 
-    console.log(userData)
+    axiosInstance.post("/login" , {
+      email : userData.login,
+      password: userData.password
+    } , {
+      withCredentials : true
+    })
+    .then(response => {
+      dispatch(login(response.data))
+
+      location.href = "/"
+    })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -28,13 +46,14 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full items-center justify-center">
+    <div className="flex w-screen h-screen items-center justify-center">
       <div className="w-full max-w-md bg-opacity-90 p-6  text-white rounded-3xl shadow-pink-normal">
         <div className="flex justify-center p-5">
           <Logo title scale={1} />
         </div>
         <form autoComplete="off" onSubmit={loginSubmited}>
           <UserInput
+            maxLength={100}
             type="text"
             id="username-email"
             name="login"
@@ -44,6 +63,7 @@ const Login: React.FC = () => {
             onChange={handleChange}
           />
           <UserInput
+            maxLength={30}
             type="password"
             id="password"
             name="password"

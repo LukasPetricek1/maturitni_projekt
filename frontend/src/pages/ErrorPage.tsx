@@ -13,15 +13,16 @@ const ErrorPage: React.FC = () => {
   const status = error.status;
   let message = "Došlo k neočekávané chybě. Zkuste to prosím později.";
 
-  if (error.message) {
-    message = JSON.parse(error.message).message;
-  } else {
+  console.log(error)
+
+  
     if (error.status === 400) {
       title = "Špatný požadavek!";
       message = "Server nemohl zpracovat váš požadavek. Zkontrolujte prosím vstupní data.";
     } else if (error.status === 401) {
       title = "Neautorizováno!";
       message = "Pro přístup k tomuto zdroji se musíte přihlásit.";
+      // window.location.href = "/login"
     } else if (error.status === 403) {
       title = "Zakázáno!";
       message = "Nemáte oprávnění k přístupu k tomuto zdroji.";
@@ -68,7 +69,7 @@ const ErrorPage: React.FC = () => {
       title = "Časový limit brány!";
       message = "Server neobdržel včasnou odpověď od jiného serveru.";
     }
-  }
+  
 
 
   return (

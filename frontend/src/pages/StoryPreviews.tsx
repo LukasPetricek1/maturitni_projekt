@@ -56,7 +56,7 @@ const StoryPreview: React.FC = () => {
   return (
     <>
       <div className="w-screen h-screen flex items-center justify-center bg-black">
-        <div className="relative w-full max-w-md h-full bg-black z-10">
+        <div className="relative w-screen max-w-md h-full bg-black z-10">
 
           <div className="absolute top-0 left-0 right-0 flex gap-2 px-4 py-2">
             {stories.map((_, index) => (

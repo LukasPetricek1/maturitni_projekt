@@ -1,13 +1,9 @@
-import React, { useRef } from "react";
+import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import SignedRoot from "./pages/signed/SignedRoot.tsx";
-import UnSignedRoot from "./pages/unsigned/UnSignedRoot.tsx";
 
-import Signup, { loader as SignUpLoader } from "./pages/SignUp.tsx";
-
-import SignedHome from "./pages/signed/HomePage.tsx";
-import UnSignedHome from "./pages/unsigned/HomePage.tsx";
+import SignedHome  from "./pages/signed/HomePage.tsx";
 
 import ErrorPage from "./pages/ErrorPage.tsx";
 import Login from "./pages/Login.tsx";
@@ -27,7 +23,10 @@ import Notifications from "./pages/Notifications.tsx";
 import PostPage from "./pages/PostPage.tsx";
 import Article from "./pages/ArticlePage.tsx";
 import CreateArticle from "./pages/CreateArticle.tsx";
-import AccountSettings from "./components/AccountSettings.tsx";
+
+import Signup from "./pages/SignUp.tsx";
+import profileLoader from "./loaders/ProfileLoader.tsx";
+import ProtectedRoute from "./ProtectedRoute.tsx";
 
 const signedRouter = createBrowserRouter([
   {
@@ -37,11 +36,12 @@ const signedRouter = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <SignedHome />,
+        element: <SignedHome />
       },
       {
         path: "profile/:account_id",
         element: <Profile />,
+        loader : profileLoader,
         children: [
           {
             path: "friends",
@@ -118,67 +118,30 @@ const signedRouter = createBrowserRouter([
         element: <Article />,
       },
       {
-        path: "settings",
-        element: <AccountSettings onClose={() => {}} />,
+        path: "signup",
+        element: <ProtectedRoute><Signup /></ProtectedRoute>
+      },
+      {
+        path: "login",
+        element: <ProtectedRoute><Login /></ProtectedRoute>
+      },
+      {
+        path: "about",
+        element: <ProtectedRoute><MoreInfoPage /></ProtectedRoute>,
       },
     ],
   },
 ]);
 
-const unSignedRouter = createBrowserRouter([
-  {
-    path: "/",
-    element: <UnSignedRoot />,
-    children: [
-      {
-        index : true,
-        element : <UnSignedHome />
-      },
-      {
-        path: "signup",
-        element: <Signup />,
-        loader: SignUpLoader,
-      },
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "about",
-        element: <MoreInfoPage />,
-      },
-    ],
-  }
-]);
 
 const App: React.FC = () => {
-  const auth = useRef(import.meta.env.VITE_AUTH);
-
-  if(auth.current !== "yes" && auth.current !== "no"){ 
-    return (
-      <section className="h-screen w-scre flex flex-col items-center justify-center gap-10">
-        <h1 className="text-4xl text-white">"{auth.current}" je neplatná hodnota pro VITE_AUTH</h1>
-        <p className="text-gray-400 text-2xl">V Souboru /.env změňte hodnotu VITE_AUTH na
-          <ul>
-            <li>
-              <h1>YES</h1>
-              <p className="text-lg">Zobrazí se UI pro přihlášeného uživatele</p>
-            </li>
-            <li>
-              <h1>NO</h1>
-              <p className="text-lg">Zobrazí se UI pro nepřihlášeného uživatele</p>
-            </li>
-          </ul>
-        </p>
-      </section>
-    )
-  }
 
   return (
     <>
       <RouterProvider
-        router={auth.current === "yes" ? signedRouter : unSignedRouter}
-      ></RouterProvider>
+        router={signedRouter}
+      >
+      </RouterProvider>
     </>
   );
 };
