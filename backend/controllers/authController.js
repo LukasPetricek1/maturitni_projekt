@@ -2,6 +2,7 @@ const { v4 : uuidv4 } = require("uuid")
 const jwt = require("jsonwebtoken")
 const userSchema = require("../mysql/schemas/userSchema")
 const bcrypt = require("bcryptjs")
+const crypto = require("crypto")
 
 const {
     createTable,
@@ -10,7 +11,7 @@ const {
   } = require("../mysql/functions/index");
 
 const generateAccessToken = (email) => {
-    return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "30d" });
+    return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
 const token = (req, res) => {
@@ -41,6 +42,14 @@ const logout = (req, res) => {
   res.send("Cookie cleared")
 }
 
+const generate_personal_code = (length) => { 
+  return crypto
+    .randomBytes(length)
+    .toString("base64")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, length);
+}
+
 const register = async (req, res) => {
     const { credentials , userInfo } = req.body;
 
@@ -66,8 +75,8 @@ const register = async (req, res) => {
       username,
       name,
       bio,
-      website
-
+      website,
+      personal_code : generate_personal_code(6)
     };
 
     try {
@@ -99,7 +108,7 @@ const register = async (req, res) => {
   
       if (existingUser) {
         if (!existingUser.password) {
-          res.status(401).json({ error: "Invalid credentials" });
+          res.status(403).json({ error: "Invalid credentials" });
           return;
         }
   
@@ -115,17 +124,22 @@ const register = async (req, res) => {
           const { email , password, name , username } = existingUser 
           const { bio , website , hobbies , id } = existingUser
 
-          res.cookie("jwt_token" , access_token , { httpOnly : true , maxAge : 1000 * 60 * 60 * 24})
+
+          if(existingUser.verified === "no"){
+            return res.status(403).json({ error : "unverified"})
+          }
+
+          res.cookie("jwt_token" , access_token , { httpOnly : true })
 
           res.status(200).json({
             credentials : { email , password , name , username },
             userInfo : { bio , website, hobbies, id}
           });
         } else {
-          res.status(401).json({ error: "Invalid credentials" });
+          res.status(403).json({ error: "Invalid credentials" });
         }
       } else {
-        res.status(401).json({ error: "Invalid credentials" });
+        res.status(403).json({ error: "Invalid credentials" });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -137,5 +151,6 @@ const register = async (req, res) => {
     login,
     token,
     verify,
-    logout
+    logout,
+    generateAccessToken
   };

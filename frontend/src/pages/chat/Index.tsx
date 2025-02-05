@@ -9,6 +9,7 @@ import {
 
 import { TbSend2 as DirectMessage } from "react-icons/tb";
 
+
 const organizations = [
   { id: 1, name: "arg-1" },
   { id: 2, name: "brg-2" },
@@ -26,6 +27,7 @@ const IndexChat: React.FC = () => {
     if (location.pathname === "/chat/" || location.pathname === "/chat")
       navigate("/chat/@me");
   }, [location.pathname, navigate]);
+
 
   return (
     <div className="flex h-screen">

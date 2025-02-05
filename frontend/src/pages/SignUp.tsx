@@ -15,6 +15,7 @@ import ProfilePhotoUpload from "../components/signup-steps/ProfilePhotoUpload";
 import AddUserInfo from "../components/signup-steps/AddUserInfo" 
 import WelcomeScreen from "../components/signup-steps/Welcome";
 import PasswordCheck from "./PasswordCheck";
+import InputCheck from "./InputCheck";
 
 
 // const domain = "http://localhost:3000"
@@ -52,6 +53,9 @@ const Signup: React.FC = () => {
     password: "",
   });
   const [didEdit, setDidEdit] = useState(false)
+  const [valid, setValid] = useState({ 
+      username : true
+    })
 
   const ValidFormData =  (formData.email.length > 0 && formData.name.length > 0 && formData.username.length > 0 && formData.password.length > 0)
   
@@ -137,7 +141,7 @@ const Signup: React.FC = () => {
           <p className="mb-6 text-gray-800 font-semibold">{loader_data["user-credentials"] && loader_data["user-credentials"].email}</p>
         </>
       </Modal>} */}
-    <div className="flex items-center justify-center h-full">
+    <div className="flex items-center justify-center w-screen h-full">
       <div className="flex w-11/12 max-w-5xl h-4/5 bg-gray-900 rounded-lg shadow-lg overflow-hidden">
         
         <div className={ `flex flex-1 flex-col items-center justify-center registration-background`}>
@@ -157,23 +161,40 @@ const Signup: React.FC = () => {
             className="w-full max-w-md mx-auto"
             autoComplete="off"
           >
-            <UserInput
-              label="Vaše jméno"
+
+            <InputCheck 
+              type="text"
               id="name"
+              label="Vaše jméno"
+              maxLength={45}
               name="name"
               placeholder="Vaše jméno"
+              setValue={value => setFormData(prev => { return { ...prev , name : value}})}
               value={formData.name}
-              onChange={handleChange}
-              maxLength={30}
+              version={"dark"}
+              setValid={(name, state) => setValid(prev => {
+                return {
+                  ...prev,
+                  [name] : state
+                }
+              })}
             />
-            <UserInput
-              label="Uživatelské jméno"
+            <InputCheck 
+              type="text"
               id="username"
+              label="Uživatelské jméno"
+              maxLength={45}
               name="username"
-              placeholder="Vaše uživatelské jméno"
+              placeholder="Uživatelské jméno"
+              setValue={value => setFormData(prev => { return { ...prev , username : value}})}
               value={formData.username}
-              onChange={handleChange}
-              maxLength={15}
+              version={"dark"}
+              setValid={(name, state) => setValid(prev => {
+                return {
+                  ...prev,
+                  [name] : state
+                }
+              })}
             />
             <UserInput
               type="email"
@@ -184,11 +205,12 @@ const Signup: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               maxLength={100}
+              version={"dark"}
             />
             <PasswordCheck 
               setValid={setValidPassword}
               value={formData.password}
-              setValue={e => setFormData(prev => { return { ...prev, password : e.target.value}})}
+              setValue={value => setFormData(prev => { return { ...prev, password : value}})}
             />
             <UserInput
               type="password"
@@ -198,7 +220,8 @@ const Signup: React.FC = () => {
               placeholder="Vaše heslo"
               value={secondPassword}
               onChange={e => setSecondPassword(e.target.value.trim())}
-              maxLength={30}
+              maxLength={60}
+              version={"dark"}
             />
             <button
               type="submit"

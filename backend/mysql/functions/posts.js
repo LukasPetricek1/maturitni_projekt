@@ -17,9 +17,9 @@ const getAllPostsFunction = (user_id) => {
   })
 }
 
-const getUserPosts = (user_id) => { 
+const getUserPosts = (id) => { 
   return new Promise((resolve, reject) => { 
-    pool.query(getUserPostsQuery(user_id) , (err, results) => { 
+    pool.query(getUserPostsQuery(id) , (err, results) => { 
       if(err){ 
         reject(err)
       }else{ 

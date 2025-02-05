@@ -3,6 +3,7 @@ const userSchema = `
     id INT NOT NULL AUTO_INCREMENT,
     specific_id VARCHAR(255) NOT NULL UNIQUE,
     theme_picture VARCHAR(255) NULL,
+    personal_code VARCHAR(6) NOT NULL,
     profile_picture VARCHAR(255) NULL,
     username VARCHAR(45) NOT NULL,
     name VARCHAR(45) NOT NULL,

@@ -36,8 +36,7 @@ const authSlice = createSlice({
   name : "auth",
   initialState,
   reducers : { 
-    register : (state , action : PayloadAction<authProps["credentials"]>) => { 
-      state.isAuth = true;
+    register : (state , action : PayloadAction<authProps["credentials"]>) => {
       state.credentials = action.payload;
     } , 
     addUserInfo : (state, action : PayloadAction<authProps["userInfo"]>) => { 

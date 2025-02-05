@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import ListOfFriends from "../../components/ListOfFriends";
 import { Link, useLoaderData, useSearchParams } from "react-router-dom";
@@ -6,7 +6,6 @@ import { Link, useLoaderData, useSearchParams } from "react-router-dom";
 import Post from "../../components/Post";
 
 import { stories } from "../../data/stories";
-import { friendsData } from "../../data/friendsData";
 // import { postsData } from "../../data/posts";
 import { articles } from "../../data/articles";
 
@@ -27,13 +26,23 @@ interface postDataProps {
   comments: number;
 }
 
+export interface Person {
+  id : number;
+  name : string;
+  username: string;
+  profile_picture : string; 
+}
+
 const POSSIBLE_SECTIONS = ["příspěvky", "články"];
 
 const SignedHome: React.FC = () => {
+
   
   const [activeView, setActiveView] = useSearchParams();
   const loader = useLoaderData() as postDataProps[];
-  const logged =useSelector<RootState>(state => state.auth.isAuth)
+  const logged = useSelector<RootState>(state => state.auth.isAuth)
+  const id : number = useSelector<RootState>(state => state.auth.userInfo?.id)
+
 
   if(!logged){ 
     return <UnSignedHome />
@@ -111,9 +120,9 @@ const SignedHome: React.FC = () => {
         </div>
 
         
-        <section className="col-span-3 rounded-xl overflow-y-scroll max-h-full w-full relative right-0 flex flex-col gap-5 p-10 scrollbar-disabled">
-          <ListOfFriends friendsList={friendsData} />
-        </section>
+        {id && <section className="col-span-3 rounded-xl overflow-y-scroll max-h-full w-full relative right-0 flex flex-col gap-5 p-10 scrollbar-disabled">
+          <ListOfFriends user_id={id} />
+        </section>}
       </div>
     </>
   );

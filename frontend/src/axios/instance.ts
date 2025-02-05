@@ -2,8 +2,12 @@ import axios, { AxiosInstance } from "axios";
 
 const axiosInstance : AxiosInstance = axios.create({ 
   baseURL : "http://localhost:3000",
-  timeout : 1000,
   withCredentials : true
+})
+
+axios.interceptors.request.use(function(config){ 
+  console.log(config.baseURL)
+  return config
 })
 
 axiosInstance.interceptors.response.use(function(response){ 

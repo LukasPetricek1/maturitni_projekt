@@ -1,6 +1,11 @@
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { RootState } from "../redux-store";
 
 const MoreInfoPage = () => {
+
+  const isAuth = useSelector((state : RootState) => state.auth.isAuth);
+
   const features = [
     {
       title: "Spojení s přáteli",
@@ -34,10 +39,10 @@ const MoreInfoPage = () => {
   ];
 
   return (
-    <div className="relative min-h-full text-gray-800">
+    <div className={`relative ${!isAuth ? "w-screen" : "w-full"} min-h-full text-gray-800`}>
       <header className=" text-white py-16 text-center">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-purple-600">
-          Více informací o naší aplikaci
+          Více informací o aplikaci FaDiGram
         </h1>
         <p className="text-lg md:text-xl max-w-2xl mx-auto">
           Poznejte všechny funkce, které vám pomohou zůstat propojeni se světem.
@@ -66,7 +71,7 @@ const MoreInfoPage = () => {
         </div>
       </section>
 
-      <section className="py-10  text-white text-center">
+      {!isAuth && <section className="py-10  text-white text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-4 text-purple-600">
           Připravení se připojit?
         </h2>
@@ -78,7 +83,7 @@ const MoreInfoPage = () => {
             Zaregistrujte se nyní
           </button>
         </Link>
-      </section>
+      </section>}
     </div>
   );
 };

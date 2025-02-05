@@ -1,12 +1,27 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useLayoutEffect, useState } from "react";
+import { Link, useOutletContext } from "react-router-dom";
 
 import { IoClose as CloseIcon } from "react-icons/io5";
 import ListOfFriends from "../components/ListOfFriends";
+import axiosInstance from "../axios/instance";
 
-import { friendsData } from "../data/friendsData";
 
 const Friends: React.FC = () => {
+  const [friendsList, setFriendsList] = useState([])
+  const { user_id } = useOutletContext<{ user_id : number }>()
+
+  useLayoutEffect(() => { 
+    if(user_id){
+      axiosInstance.get(`users/${user_id}/friends`)
+      .then(response => {
+        if(response.data){ 
+          const data = response.data
+          setFriendsList(data)
+        }
+      })
+      .catch(err => console.log(err))
+    }
+  } , [user_id])
 
   return (
     <div className="p-4">
@@ -17,7 +32,7 @@ const Friends: React.FC = () => {
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <ListOfFriends friendsList={friendsData} />
+        <ListOfFriends customFriendsList={friendsList} />
       </div>
     </div>
   );

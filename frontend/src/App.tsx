@@ -27,6 +27,7 @@ import CreateArticle from "./pages/CreateArticle.tsx";
 import Signup from "./pages/SignUp.tsx";
 import profileLoader from "./loaders/ProfileLoader.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
+import Verify from "./pages/Verify.tsx";
 
 const signedRouter = createBrowserRouter([
   {
@@ -41,7 +42,7 @@ const signedRouter = createBrowserRouter([
       {
         path: "profile/:account_id",
         element: <Profile />,
-        loader : profileLoader,
+        // loader : profileLoader,
         children: [
           {
             path: "friends",
@@ -123,11 +124,15 @@ const signedRouter = createBrowserRouter([
       },
       {
         path: "login",
-        element: <ProtectedRoute><Login /></ProtectedRoute>
+        element: <ProtectedRoute><Login /></ProtectedRoute>,
+      },
+      {
+        path : "login/verify/:email",
+        element : <Verify />
       },
       {
         path: "about",
-        element: <ProtectedRoute><MoreInfoPage /></ProtectedRoute>,
+        element: <MoreInfoPage />,
       },
     ],
   },

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Single Sender</title>
+    <title>Ověření účtu </title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -86,12 +86,12 @@
 
     <div class="email-container">
     <div class="email-header">
-        <img src="https://sendgrid.com/brand/sg-twilio-lockup.svg" alt="SendGrid">
+        <img src="/logo.png" alt="Fadigram">
     </div>
     <div class="email-content">
         <h4>Ověříme jestli se jedná opravdu o Vás a patří Vám adresa: </h4>
-        <a href="mailto:lukas.petricek.business@gmail.com"><strong>lukas.petricek.business@gmail.com</strong></a>
-        <h1>abc123</h1>
+        <a href="mailto:lukas.petricek.business@gmail.com"><strong><%= email %></strong></a>
+        <h1><%= code %></h1>
     </div>
     </div>
 </body>

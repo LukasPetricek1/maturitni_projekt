@@ -11,6 +11,9 @@ import { useDispatch } from "react-redux";
 import { login } from "../../redux-store/auth";
 import axiosInstance from "../../axios/instance";
 import { userProps } from "../Profile";
+import SignedHome from "./HomePage";
+import UnSignedHome from "../unsigned/HomePage";
+import { socket } from "../../main";
 // import { login } from "../../redux-store/auth";
 
 const SignedRoot: React.FC = () => {
@@ -53,11 +56,14 @@ const SignedRoot: React.FC = () => {
               userInfo: { id, website, bio, hobbies: [] },
             })
           );
+          socket.emit("register" , username)
         }
       })
       .catch((err) => {
         if (!err.ok) {
-          navigate("/");
+          if(!["/login" , "/signup"].some(href => location.pathname.includes(href))){
+            navigate("/");
+          }
         }
       });
     // console.log(loader)

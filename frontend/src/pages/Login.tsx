@@ -36,7 +36,13 @@ const Login: React.FC = () => {
     .then(response => {
       dispatch(login(response.data))
 
-      location.href = "/"
+      location.pathname = "/"
+    })
+    .catch(async function(err){
+      const { error } = err.response.data
+      if(error === "unverified"){ 
+        navigate("verify/"+userData.login)
+      }
     })
   }
 
@@ -55,15 +61,16 @@ const Login: React.FC = () => {
           <UserInput
             maxLength={100}
             type="text"
-            id="username-email"
+            id="email"
             name="login"
-            label="Uživatelské jméno / Email"
-            placeholder="Uživatelské jméno nebo email"
+            label="Email"
+            placeholder="Email ..."
             value={userData.login}
             onChange={handleChange}
+            version={"dark"}
           />
           <UserInput
-            maxLength={30}
+            maxLength={60}
             type="password"
             id="password"
             name="password"
@@ -71,6 +78,7 @@ const Login: React.FC = () => {
             placeholder="Heslo"
             value={userData.password}
             onChange={handleChange}
+            version={"dark"}
           />
           <button
             type="submit"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useRouteError } from "react-router-dom";
 
 interface RouteError {
@@ -14,6 +14,15 @@ const ErrorPage: React.FC = () => {
   let message = "Došlo k neočekávané chybě. Zkuste to prosím později.";
 
   console.log(error)
+  // useEffect(() => {
+  //   const x = setTimeout(() => {
+  //     window.location.href = "/"
+  //   } , 2000)
+
+  //   return () => { 
+  //     clearTimeout(x)
+  //   }
+  // } , [])
 
   
     if (error.status === 400) {

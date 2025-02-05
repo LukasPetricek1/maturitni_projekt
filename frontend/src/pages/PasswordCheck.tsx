@@ -5,7 +5,7 @@ import UserInput from "../components/UserInput";
 interface Props { 
   setValid : (value : boolean) => void;
   value : string;
-  setValue: (e : ChangeEvent<HTMLInputElement>) => void;
+  setValue: (e : string) => void;
 }
 
 const PasswordCheck : React.FC<Props> = ({ setValid , value, setValue }) => { 
@@ -22,7 +22,7 @@ const PasswordCheck : React.FC<Props> = ({ setValid , value, setValue }) => {
 
   useEffect(() => { 
     const { noSpace, length , letters, digits, specialSymbols} = rules;
-    if(noSpace && length <= 30 && letters >= 6 && digits >= 2 && specialSymbols >= 1){
+    if(noSpace && length <= 60 && letters >= 6 && digits >= 2 && specialSymbols >= 1){
       setValid(true)
     }else{ 
       setValid(false)
@@ -31,7 +31,7 @@ const PasswordCheck : React.FC<Props> = ({ setValid , value, setValue }) => {
 
   function handleChange(e : ChangeEvent<HTMLInputElement>){ 
     if(e.target.value !== " "){ 
-      setValue(e)
+      setValue(e.target.value)
 
       setRules(prev => { 
         return {
@@ -49,19 +49,20 @@ const PasswordCheck : React.FC<Props> = ({ setValid , value, setValue }) => {
     <UserInput
       id="password"
       label="Heslo"
-      maxLength={30}
+      maxLength={60}
       name="password"
       onChange={handleChange}
       placeholder="Vaše heslo"
       value={value}
       type="password"
       ref={password}
+      version="dark"
     > 
     <div className="mt-4 mb-4">
         <h1 className="text-white">Heslo musí: </h1>  
         <ul className="list-inside text-red-700">
           <li className={rules.noSpace ? "text-green-500" : "text-red-700"}>Nesmí obsahovat mezezery</li>
-          <li className={rules.length <= 30 ? "text-green-500" : "text-red-700"}>Kratší než 30 znaků</li>
+          <li className={rules.length <= 30 ? "text-green-500" : "text-red-700"}>Kratší než 60 znaků</li>
           <li className={rules.letters >= 6 ? "text-green-500" : "text-red-700"}>Mít alespoň 6 písmen</li>
           <li className={rules.digits >= 2 ? "text-green-500" : "text-red-700"}>Obsahovat alespoň 2 číslice</li>
           <li className={rules.specialSymbols >= 1 ? "text-green-500" : "text-red-700"}>Obsahovat alespoň 1 následující znak (@,#,$,%,&,)</li>

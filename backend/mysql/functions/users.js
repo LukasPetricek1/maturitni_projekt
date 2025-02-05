@@ -27,7 +27,20 @@ const getUser = (query) => {
   })
 }
 
+const verifyUser = (query) => { 
+  return new Promise((resolve, reject) => { 
+    pool.query(query , (err, results) => { 
+      if(err){ 
+        reject(err)
+      }else{ 
+        resolve(results)
+      }
+    })
+  })
+}
+
 module.exports = {
   getAllUsers,
-  getUser
+  getUser,
+  verifyUser
 }

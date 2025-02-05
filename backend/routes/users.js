@@ -6,10 +6,12 @@ const PostsController = require("../controllers/posts")
 
 router.get("/" , UserController.getAllUsers)
 
+router.get("/other" , UserController.getAllOtherUsers)
+
 router.get("/posts" , PostsController.getUserPosts)
 
 router.get("/:username" , UserController.getUser)
 
-router.get("/:username/friends" , UserController.getUserFriends)
+router.get("/:user_id/friends" , UserController.getUserFriends)
 
 module.exports = router;
