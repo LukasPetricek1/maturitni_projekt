@@ -12,7 +12,7 @@ insta<span style="color:red">GRAM</span>
 
 ## Naklonujte si tento repozitář:
    ```sh
-   git clone https://github.com/uzivatel/fadigram.git
+   git clone https://github.com/LukasPetricek1/maturitni_projekt
    cd fadigram
    ```
 
