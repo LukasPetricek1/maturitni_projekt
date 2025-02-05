@@ -13,7 +13,7 @@ insta<span style="color:red">GRAM</span>
 ## Naklonujte si tento repozitář:
    ```sh
    git clone https://github.com/LukasPetricek1/maturitni_projekt
-   cd fadigram
+   cd maturitni_projekt
    ```
 
 # Struktura FRONTENDU
@@ -154,17 +154,16 @@ npm run preview
    ```sh
    npm install
    ```
-2. Vytvořte `.env` soubor a nastavte požadované proměnné prostředí (viz sekce **Konfigurace**).
+2. Vytvořte `.env` soubor ve složce **backend** a nastavte požadované proměnné prostředí (viz sekce **Konfigurace**).
 ## Konfigurace
-Vytvořte soubor `.env` v kořenové složce projektu a nastavte následující proměnné:
 
 ```env
-PORT=PORT
+PORT=PORT (PORT na kterém poběží server)
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=heslo
 DB_NAME=fadigram
-JWT_SECRET=nejake_tajne_heslo
+JWT_SECRET=nejake_tajne_heslo (slouží k podpisu JWT tokenů)
 AWS_ACCESS_KEY_ID=vas_aws_klic
 AWS_SECRET_ACCESS_KEY=vas_aws_secret
 AWS_BUCKET_NAME=vas_s3_bucket
