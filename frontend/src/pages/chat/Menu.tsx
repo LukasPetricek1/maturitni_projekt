@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom"
 import DirectMenu from "./DirectMenu";
 import OrgMenu from "./OrgMenu";
 
-import Wumpus from "../../assets/wumpus2.png"
+import Wumpus from "../../assets/Wumpus2.png"
 
 
 interface Props{ 

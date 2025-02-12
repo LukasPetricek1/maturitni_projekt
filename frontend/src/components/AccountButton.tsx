@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { authProps, logout } from "../redux-store/auth";
-import { Link , useNavigate }  from "react-router-dom";
+import { Link }  from "react-router-dom";
 
 import { RiAccountCircleLine as AccountPlaceholder } from "react-icons/ri";
 import axiosInstance from "../axios/instance";
@@ -11,7 +11,6 @@ const AccountButton : React.FC = () => {
   const dispatch = useDispatch()
   const userInfo  = useSelector((state : RootState) => state.auth as authProps)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const navigate = useNavigate()
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev); 
