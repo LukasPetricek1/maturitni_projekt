@@ -2,7 +2,10 @@ const mysql = require("mysql2")
 const options = require("./db/config")
 
 const connectDB = async () => { 
-    const pool = mysql.createPool(options)
+    const pool = mysql.createPool({ 
+      ...options,
+      multipleStatements : true
+    })
 
     pool.getConnection(function(err, connection){ 
         if(err){

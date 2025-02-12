@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import ListOfFriends from "../components/ListOfFriends";
+import ListOfFriends from "../components/friends/ListOfFriends";
 
-import { discoverUsers } from "../data/users";
+import axiosInstance from "../axios/instance";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux-store";
 
 interface User {
   id: number;
@@ -43,15 +45,15 @@ interface HobbyInputProps {
   hobbiesData: User["hobbies"];
   selectedHobbies: string[];
   setSelectedHobbies: React.Dispatch<React.SetStateAction<string[]>>;
-  addHobby : (arg : string) => void
-  removeHobby : ( arg : string) => void
+  addHobby: (arg: string) => void;
+  removeHobby: (arg: string) => void;
 }
 
 const HobbyInput: React.FC<HobbyInputProps> = ({
   hobbiesData,
   selectedHobbies,
-  addHobby, 
-  removeHobby
+  addHobby,
+  removeHobby,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState<string>("");
@@ -77,8 +79,6 @@ const HobbyInput: React.FC<HobbyInputProps> = ({
       currentHobbies.push([hobby, sortedHobbyCounts[hobby]]);
     }
   });
-
-  
 
   return (
     <div className="relative w-96 mx-auto mt-10">
@@ -123,66 +123,87 @@ const HobbyInput: React.FC<HobbyInputProps> = ({
   );
 };
 
+// -----------------------------------------------------------------
 const DiscoverUsers: React.FC = () => {
-  const [selectedHobbiesParams , setSelectedHobbiesParams] = useSearchParams();
+  const [selectedHobbiesParams, setSelectedHobbiesParams] = useSearchParams();
   const selected_hobbies = selectedHobbiesParams.get("selected_hobbies");
-
+  const userId = useSelector<RootState>((state) => state.auth.userInfo?.id);
 
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(
     selected_hobbies ? selected_hobbies?.split(",") : []
   );
 
-  // const [hobbyFilter, setHobbyFilter] = useState<string>("");
-  const [users] = useState<User[]>(discoverUsers);
+  const [hobbies, setHobbies] = useState([]);
+  const [users, setUsers] = useState([]);
 
-  // Filtrování uživatelů podle zadaného hobby
-  // const filteredUsers = users.filter((user) =>
-  //   hobbyFilter
-  //     ? user.hobbies?.some((hobby) =>
-  //         hobby.toLowerCase().includes(hobbyFilter.toLowerCase())
-  //       )
-  //     : true
-  // );
+  // users.map(function (user: User) {
+  //   selectedHobbies.map((hobby) => {
+  //     if (user.hobbies?.includes(hobby) && !filteredUsers.includes(user)) filteredUsers.push(user);
+  //   });
+  // });
 
-  const filteredUsers: User[] = [];
+  useEffect(() => {
+    if (userId) {
+      axiosInstance
+        .get(
+          `/users/discover?selected_hobbies=${selectedHobbies.join(
+            ","
+          )}&user_id=${userId} `
+        )
+        .then(({ data }) => {
+          console.log(data);
+          setUsers(data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [selectedHobbies, userId]);
 
-  users.map(function (user: User) {
-    // let matched = true
-    selectedHobbies.map((hobby) => {
-      // if(!user.hobbies?.includes(hobby)) matched = false
-      if (user.hobbies?.includes(hobby) && !filteredUsers.includes(user)) filteredUsers.push(user);
-    });
-    // if(matched) filteredUsers.push(user)
-  });
-
-  const hobbies = users.flatMap((user) => user.hobbies);
-
-  // const handleHobbyFilter = (e: string) => {
-  //   setHobbyFilter(e);
-  // };
+  useEffect(() => {
+    if (userId) {
+      axiosInstance
+        .get("/hobbies/?user_id=" + userId)
+        .then(({ data }) => {
+          console.log(data);
+          setHobbies(data.map((hobby) => hobby.name));
+          // const hobbies = data.reduce((a,b) => a.hobbies.split(",").concat(b.hobbies.split(",")))
+          // setHobbies(hobbies)
+          // setUsers(data)
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [userId]);
 
   const addHobby = (hobby: string) => {
     if (!selectedHobbies.includes(hobby)) {
       setSelectedHobbies([...selectedHobbies, hobby]);
 
-
-      const newParam = selectedHobbiesParams.size > 0 && selectedHobbiesParams.get("selected_hobbies")!.length ? selectedHobbiesParams.get("selected_hobbies") + `%2C${hobby}` : hobby
-      selectedHobbiesParams.set("selected_hobbies" , decodeURIComponent(newParam))
-      setSelectedHobbiesParams(selectedHobbiesParams)
+      const newParam =
+        selectedHobbiesParams.size > 0 &&
+        selectedHobbiesParams.get("selected_hobbies")!.length
+          ? selectedHobbiesParams.get("selected_hobbies") + `%2C${hobby}`
+          : hobby;
+      selectedHobbiesParams.set(
+        "selected_hobbies",
+        decodeURIComponent(newParam)
+      );
+      setSelectedHobbiesParams(selectedHobbiesParams);
     }
   };
 
   const removeHobby = (hobby: string) => {
     setSelectedHobbies(selectedHobbies.filter((h) => h !== hobby));
 
-    const selected_hobbies = selectedHobbiesParams.get("selected_hobbies")!
-    
-    if(selectedHobbies.length === 1){
-      selectedHobbiesParams.delete("selected_hobbies")
-    }else{
-      selectedHobbiesParams.set("selected_hobbies" , selected_hobbies.slice(0,selected_hobbies.indexOf(hobby) - 1))
+    const selected_hobbies = selectedHobbiesParams.get("selected_hobbies")!;
+
+    if (selectedHobbies.length === 1) {
+      selectedHobbiesParams.delete("selected_hobbies");
+    } else {
+      selectedHobbiesParams.set(
+        "selected_hobbies",
+        selected_hobbies.slice(0, selected_hobbies.indexOf(hobby) - 1)
+      );
     }
-    setSelectedHobbiesParams(selectedHobbiesParams)
+    setSelectedHobbiesParams(selectedHobbiesParams);
   };
 
   return (
@@ -191,21 +212,11 @@ const DiscoverUsers: React.FC = () => {
         Objevte nové přátele
       </h1>
 
-      {/* Vyhledávací pole */}
       <div className="flex justify-center mb-6">
-        {/* <input
-          type="text"
-          placeholder="Hledat podle zálib (např. tenis, běhání)..."
-          value={hobbyFilter}
-          onChange={(e) => setHobbyFilter(e.target.value)}
-          className="w-full max-w-lg p-2 outline-none bg-transparent text-white border-purple-500 border-b-2 rounded-lg shadow-sm focus:border-2 transition"
-        /> */}
         <HobbyInput
           hobbiesData={hobbies.filter(
             (hobby) => !selectedHobbies.includes(hobby)
           )}
-          // action={handleHobbyFilter}
-          // value={hobbyFilter}
           addHobby={addHobby}
           removeHobby={removeHobby}
           selectedHobbies={selectedHobbies}
@@ -213,14 +224,13 @@ const DiscoverUsers: React.FC = () => {
         />
       </div>
 
-      {/* Zobrazení seznamu uživatelů */}
-      {filteredUsers.length > 0 ? (
+      {users.length > 0 ? (
         <section className="w-full grid grid-cols-4 gap-5 px-10">
-          <ListOfFriends friendsList={filteredUsers} />
+          <ListOfFriends customFriendsList={users} />
         </section>
       ) : (
         <p className="text-center text-gray-500">
-          Zadejte alespoň jednu zílibu.
+          Nikoho jsme bohužel nenašli.
         </p>
       )}
     </div>

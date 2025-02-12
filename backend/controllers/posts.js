@@ -1,27 +1,7 @@
-const {getAllPostsFunction , getUserPosts } = require("../mysql/functions/posts")
-const crypto = require("crypto")
+const {getAllPostsFunction , getUserPosts , createPost, getPost } = require("../mysql/functions/posts")
+const { PutObjectCommand } = require("@aws-sdk/client-s3")
 
-const { S3Client , GetObjectCommand , PutObjectCommand } = require("@aws-sdk/client-s3")
-
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-
-const {
-  BUCKET_NAME,
-  BUCKET_REGION,
-  ACCESS_KEY,
-  SECRET_ACCESS_KEY
-} = process.env;
-
-const s3 = new S3Client({ 
-  region: BUCKET_REGION,
-  credentials : { 
-    accessKeyId : ACCESS_KEY,
-    secretAccessKey : SECRET_ACCESS_KEY
-  }
-})
-
-const randomImageName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex")
-
+const s3 = require("../upload/s3")
 
 exports.getAllPosts = function(req, res){ 
   const { user_id } = req.query;
@@ -38,23 +18,10 @@ exports.getUserPosts = function(req, res){
   const  { id } = req.query;
   getUserPosts(id)
   .then(data => {
-    data = data.map(post => {
-      return { 
-        id : post.id,
-        username : post.username,
-        title: post.title,
-        description : post.description,
-        contentType : post.type,
-        contentSrc : post.url,
-        date : post.created_at,
-        likes : post.like_count,
-        comments: post.comment_count
-      }
-    })
-
     res.status(201).json(data)
   })
   .catch(err => {
+    console.log(err)
     res.status(500).send({ error : err})
   })
 }
@@ -62,29 +29,54 @@ exports.getUserPosts = function(req, res){
 exports.getPost = async function(req, res){ 
   const { post_id } = req.params;
 
-  const client = new S3Client(clientParams);
-  const command = new GetObjectCommand(getObjectParams);
-  const url = await getSignedUrl(client, command, { expiresIn: 3600 });
-  res.send(`Post with id : ${post_id}`)
+  // const client = new S3Client(clientParams);
+  // const command = new GetObjectCommand(getObjectParams);
+  // const url = await getSignedUrl(client, command, { expiresIn: 3600 });
+  // res.send(`Post with id : ${post_id}`)
+
+  getPost(post_id)
+  .then(data => {
+    res.status(201).json(data)
+  })
+  .catch(err => {
+    console.log(err)
+    res.status(500).send({ error : err})
+  })
 }
 
 exports.createPost = async function(req, res){ 
   console.log(req.body)
+  const { user_id } = req.query;
   const buffer = req.file.buffer;
 
 
   const params = { 
-    Bucket : BUCKET_NAME,
-    Key: randomImageName(),
+    Bucket : process.env.AWS_BUCKET_NAME,
+    // Key: randomImageName(),
+    Key : `public/${Date.now()}-${req.file.originalname}`,
     Body : buffer,
     ContentType : req.file.mimetype
   }
 
-  const command = new PutObjectCommand(params)
+  try {
+    const command = new PutObjectCommand(params)
 
-  await s3.send(command)
+    await s3.send(command) 
+    const fileURL = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${params.Key}`
 
-  res.json({ error : null })
+    await createPost(req.body.name, req.body.description, fileURL, req.file.mimetype, user_id, "public")
+    
+  
+  }catch(err){ 
+    if(err){ 
+      console.log(err)
+      return res.sendStatus(501) 
+    }
+  }
+  
+
+
+  return res.json({ error : null })
 }
 
 exports.archivePost = function(req, res){ 

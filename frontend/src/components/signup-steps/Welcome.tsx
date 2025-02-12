@@ -1,11 +1,9 @@
 import React , { useEffect} from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 import { TypedUseSelectorHook ,useSelector } from "react-redux";
 import { RootState } from "../../redux-store";
-
-const domain = "http://localhost:3000"
+import axiosInstance from "../../axios/instance";
 
 interface WelcomeScreenProps {
   user : { 
@@ -21,7 +19,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ user }) => {
 
   useEffect(() => { 
     console.log(auth.credentials)
-    axios.post(domain + "/register" , {
+    axiosInstance.post("/register" , {
       credentials : auth.credentials,
       userInfo: auth.userInfo
     })

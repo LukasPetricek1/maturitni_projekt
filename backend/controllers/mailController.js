@@ -1,37 +1,75 @@
-const express = require("express")
-const jwt = require("jsonwebtoken");
+const crypto = require("crypto")
+const ejs = require("ejs")
+const path = require("path")
+const transporter  = require("../mail/connection");
+
 const { generateAccessToken } = require("./authController");
 const { verifyUser } = require("../mysql/functions/users");
 const { verifyUserQuery } = require("../mysql/queries/user");
 
+const { getCode , insertCode } = require("../mysql/functions/mail")
+
+const generateCode = () => crypto.randomBytes(6).toString("hex").slice(0,6)
+
+
+
+const sendCode = async (req, res) => { 
+  if(!req.user_data){ 
+    return res.json({ error : "no exists"})
+  }
+  const { email } = req.user_data;
+
+  try{ 
+    const code = await getCode(email)
+
+    if(code.length > 0){ 
+      const current_code = code[0]
+      const now = Date.now()
+
+
+      if (current_code.expires_at > now) {
+        return res.json({ error: "sended" });
+      }
+
+    }
+      const newCode = generateCode()
+      // platnost 1 dens
+      const expiresAt = Date.now() + 1000 * 60 * 60 * 24
+  
+      await insertCode({ email , code : newCode , expires_at : expiresAt})
+
+      await ejs.renderFile( path.join(__dirname , ".." , "views" , "email.ejs"), { code : newCode, email : email},async (err , template) =>{
+
+      transporter.sendMail({ 
+          from : "lukas.petricek.business@gmail.com",
+          to : email,
+          subject : "Potvrďtě svůj účet",
+          html : template
+        } , function(err, info){
+          if(err){
+            console.log("Error" , err)
+            return res.status(502).send("SendGrid server vrací chybnou odpověď.")
+          }
+          console.log('Sended: ')
+          return res.json({ data : info })
+        })
+      } )
+
+  }catch(err){ 
+    console.log(err)
+  }
+
+
+  return res.sendStatus(200)
+}
 
 const verify = async (req, res) => { 
-  // const decoded_token = req.decoded_token;
-  // const user_data = req.user_data;
-
-  // if(decoded_token.email === user_data.email){ 
-  //   console.log("Email verified")
-  // }
-  
-  // res.send(req.decoded_token)
-
-  // const { email } = req.params;
-  // const existingUser = await checkRecordExists("users", "email", email);
-
-  // if(!existingUser){ 
-  //   return res.sendStatus(500)
-  // }else{ 
-  //   const { personal_code } = existingUser;
-  //   return res.json({ code : personal_code })
-  // }
-  // try{
-  //   const decoded = jwt.verify()
-  // }
 
   const { code } = req.body;
   const userData = req.user_data
+  const database_code = await getCode(userData.email)
 
-  if(code === userData.personal_code){
+  if(code === database_code[0].code){
 
 
     const access_token = generateAccessToken(userData.email)
@@ -57,5 +95,6 @@ const verify = async (req, res) => {
 }
 
 module.exports = { 
-  verify
+  verify,
+  sendCode
 }

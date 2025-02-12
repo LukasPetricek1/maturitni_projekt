@@ -13,21 +13,27 @@ CREATE TABLE IF NOT EXISTS `users` (
   `specific_id` VARCHAR(255) NOT NULL UNIQUE,
   `theme_picture` VARCHAR(255) NULL,
   `profile_picture` VARCHAR(255) NULL,
-  `username` VARCHAR(45) NOT NULL,
+  `username` VARCHAR(45) NOT NULL UNIQUE,
   `name` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(100) NOT NULL UNIQUE,
   `password` VARCHAR(60) NOT NULL,
   `status` ENUM('online', 'offline', 'invisible') NOT NULL DEFAULT 'invisible',
   `bio` VARCHAR(500) NULL,
   `website` VARCHAR(200) NULL,
   `last_seen` DATETIME NOT NULL DEFAULT now(),
-  `personal_code` VARCHAR(6) NOT NULL,
   `verified` ENUM('yes' , 'no') NOT NULL DEFAULT 'no',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
 ENGINE = InnoDB;
 
+-- tabulka ověřovacích kódů
+CREATE TABLE verification_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    code VARCHAR(10) NOT NULL,
+    expires_at BIGINT NOT NULL
+);
 
 -- tabulka zájmů
 
@@ -203,6 +209,8 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `url` VARCHAR(200) NOT NULL,
   `type` ENUM('video', 'image') NOT NULL,
   `user_id` INT NOT NULL,
+  `security` ENUM ("private" , "public") DEFAULT "public",
+  `created_at` DATETIME DEFAULT now()
   PRIMARY KEY (`id`),
   INDEX `fk_posts_user1_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_posts_user1`

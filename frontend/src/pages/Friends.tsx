@@ -1,27 +1,15 @@
-import React, { useLayoutEffect, useState } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import React from "react";
+import { Link  } from "react-router-dom";
 
 import { IoClose as CloseIcon } from "react-icons/io5";
-import ListOfFriends from "../components/ListOfFriends";
-import axiosInstance from "../axios/instance";
+import ListOfFriends from "../components/friends/ListOfFriends";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux-store";
+import { authProps } from "../redux-store/auth";
 
 
 const Friends: React.FC = () => {
-  const [friendsList, setFriendsList] = useState([])
-  const { user_id } = useOutletContext<{ user_id : number }>()
-
-  useLayoutEffect(() => { 
-    if(user_id){
-      axiosInstance.get(`users/${user_id}/friends`)
-      .then(response => {
-        if(response.data){ 
-          const data = response.data
-          setFriendsList(data)
-        }
-      })
-      .catch(err => console.log(err))
-    }
-  } , [user_id])
+  const friendsList : authProps["friends"] = useSelector<RootState>(state => state.auth.friends)
 
   return (
     <div className="p-4">

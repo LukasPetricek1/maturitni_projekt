@@ -1,9 +1,9 @@
-import React from "react";
+import React, {  useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import SignedRoot from "./pages/signed/SignedRoot.tsx";
 
-import SignedHome  from "./pages/signed/HomePage.tsx";
+import SignedHome from "./pages/signed/HomePage.tsx";
 
 import ErrorPage from "./pages/ErrorPage.tsx";
 import Login from "./pages/Login.tsx";
@@ -25,9 +25,13 @@ import Article from "./pages/ArticlePage.tsx";
 import CreateArticle from "./pages/CreateArticle.tsx";
 
 import Signup from "./pages/SignUp.tsx";
-import profileLoader from "./loaders/ProfileLoader.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
 import Verify from "./pages/Verify.tsx";
+import { postPageLoader } from "./loaders/PostPageLoader.tsx";
+import Toast from "./components/Toast.tsx";
+
+import { AppContext } from "./Context/AppContext.tsx";
+import CreateOrganization from "./pages/chat/CreateOrganization.tsx";
 
 const signedRouter = createBrowserRouter([
   {
@@ -37,7 +41,8 @@ const signedRouter = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <SignedHome />
+        element: <SignedHome />,
+        // loader: homePageLoader
       },
       {
         path: "profile/:account_id",
@@ -67,6 +72,10 @@ const signedRouter = createBrowserRouter([
                 element: <DirectChat />,
               },
             ],
+          },
+          {
+            path : "create_organization",
+            element : <CreateOrganization />
           },
           {
             path: ":org_id",
@@ -113,6 +122,7 @@ const signedRouter = createBrowserRouter([
       {
         path: "/post/:post_id",
         element: <PostPage />,
+        loader: postPageLoader,
       },
       {
         path: "/article/:article_id",
@@ -120,15 +130,23 @@ const signedRouter = createBrowserRouter([
       },
       {
         path: "signup",
-        element: <ProtectedRoute><Signup /></ProtectedRoute>
+        element: (
+          <ProtectedRoute>
+            <Signup />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "login",
-        element: <ProtectedRoute><Login /></ProtectedRoute>,
+        element: (
+          <ProtectedRoute>
+            <Login />
+          </ProtectedRoute>
+        ),
       },
       {
-        path : "login/verify/:email",
-        element : <Verify />
+        path: "login/verify/:email",
+        element: <Verify />,
       },
       {
         path: "about",
@@ -138,15 +156,32 @@ const signedRouter = createBrowserRouter([
   },
 ]);
 
-
 const App: React.FC = () => {
+
+    const [toastInfo, setToastInfo] = useState({
+      message: "",
+      type: "",
+    });
+
+    const closeToast = () => { 
+      setToastInfo({ 
+        message : "",
+        type : ""
+      })
+    }
 
   return (
     <>
-      <RouterProvider
-        router={signedRouter}
-      >
-      </RouterProvider>
+      <AppContext.Provider value={{  setToastInfo : (message : string, type : string) => setToastInfo({ message , type})}}>
+      {toastInfo.message && toastInfo.type && (
+        <Toast
+          message={toastInfo.message}
+          type={toastInfo.type}
+          onClose={closeToast}
+        />
+      )}
+        <RouterProvider router={signedRouter}></RouterProvider>
+      </AppContext.Provider>
     </>
   );
 };

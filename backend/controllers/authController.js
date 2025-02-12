@@ -4,6 +4,8 @@ const userSchema = require("../mysql/schemas/userSchema")
 const bcrypt = require("bcryptjs")
 const crypto = require("crypto")
 
+const axiosInstance = require("../axios/instance")
+
 const {
     createTable,
     checkRecordExists,
@@ -42,14 +44,6 @@ const logout = (req, res) => {
   res.send("Cookie cleared")
 }
 
-const generate_personal_code = (length) => { 
-  return crypto
-    .randomBytes(length)
-    .toString("base64")
-    .replace(/[^a-zA-Z0-9]/g, "")
-    .slice(0, length);
-}
-
 const register = async (req, res) => {
     const { credentials , userInfo } = req.body;
 
@@ -75,8 +69,7 @@ const register = async (req, res) => {
       username,
       name,
       bio,
-      website,
-      personal_code : generate_personal_code(6)
+      website
     };
 
     try {
@@ -85,7 +78,15 @@ const register = async (req, res) => {
       if (userAlreadyExists) {
         res.status(409).json({ error: "Email already exists" });
       } else {
-        await insertRecord("users", user);
+        const response = await insertRecord("users", user);
+        const user_id = response.insertId
+
+        for(const hobby of hobbies){ 
+          const hobby_response = await axiosInstance.post("/hobbies/add" , { hobby })
+          const hobby_id = hobby_response.data[1][0].id
+
+          await axiosInstance.post("/hobbies/connect" , { user_id , hobby_id})
+        }
         res.status(201).json({ message: "User created successfully!" , id : user.specific_id});
       }
     } catch (error) {
@@ -136,10 +137,10 @@ const register = async (req, res) => {
             userInfo : { bio , website, hobbies, id}
           });
         } else {
-          res.status(403).json({ error: "Invalid credentials" });
+          res.json({ error : "invalid_credentials"});
         }
       } else {
-        res.status(403).json({ error: "Invalid credentials" });
+        res.json({ error: "not_exists" });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -152,5 +153,6 @@ const register = async (req, res) => {
     token,
     verify,
     logout,
+    generateAccessToken,
     generateAccessToken
   };

@@ -1,16 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  useParams,
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import React, { useEffect, useRef, useState, useContext } from "react";
+import { useParams, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { AppContext } from "../Context/AppContext";
+
+import { Tooltip } from "react-tooltip";
 
 import { LuSendHorizonal as SendIcon } from "react-icons/lu";
 import { FaPlus as CreateIcon } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
+import { IoMdPersonAdd as AddPerson } from "react-icons/io";
+import { FiUserCheck as IsFriend } from "react-icons/fi";
 
-import BackgroundImage from "../assets/background.jpeg";
 import { Link } from "react-router-dom";
 
 import Post from "../components/Post";
@@ -21,15 +20,16 @@ import Article from "../components/Article";
 
 import AccountSettings from "../components/AccountSettings";
 import axiosInstance from "../axios/instance";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-store";
-import { authProps } from "../redux-store/auth";
+import { addChat, authProps } from "../redux-store/auth";
 import { useFetch } from "../hooks/useFetch";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const interests = ["tenis", "běhání", "programování"];
+import FriendOptions from "../components/friends/FriendOptions";
+import ImageComponent from "../components/ImageComponent";
 
 export interface userProps {
   email: string;
@@ -42,28 +42,31 @@ export interface userProps {
   website: string;
   status: string;
   bio: string;
+  hobbies: string
 }
 
-interface postDataProps {
-  id: number;
-  username: string;
-  title: string;
-  description: string;
-  contentType: "image" | "video";
-  contentSrc: string;
-  date: string;
-  likes: number;
-  comments: number;
-}
 const Profile: React.FC = () => {
-  const location = useLocation()
+  const { setToastInfo } = useContext(AppContext);
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const location = useLocation();
   const { account_id } = useParams();
   const [visibleAboutMe, setShowAboutMe] = useState(false);
   const [visibleSettings, setShowSettings] = useState(false);
-  const [isOwner, setIsOwner] = useState<boolean>(false);
 
-  const ownerCredentials: authProps["credentials"] = useSelector<RootState>(
-    (state) => state.auth.credentials
+  const [relations, setRelations] = useState({
+    isOwner: false,
+    isFriend: false,
+  });
+
+  const chats = useSelector<RootState>(state => state.auth.chats)
+  const ownerInfo: authProps["userInfo"] = useSelector<RootState>(
+    (state) => state.auth.userInfo
+  );
+
+  const friends: authProps["friends"] = useSelector<RootState>(
+    (state) => state.auth.friends
   );
 
   // user fetching function
@@ -72,6 +75,18 @@ const Profile: React.FC = () => {
     return user.data[0];
   }
 
+  const findFriendById = (
+    friends: {
+      id: number;
+      name: string;
+      profile_picture: string | null;
+      username: string;
+    }[],
+    id: number
+  ) => {
+    return friends.find((friend) => friend.id === id) || null;
+  };
+
   const {
     isFetching,
     data: user,
@@ -79,26 +94,37 @@ const Profile: React.FC = () => {
   } = useFetch({
     fetchFn: fetchUser,
     initialValue: [],
-    reCall: location.pathname
+    reCall: [ownerInfo , location.pathname],
   });
 
+
   useEffect(() => {
-    if(error){ 
-      throw new Response('Data nebyla nalezena', { status: 404 });
+    if (error) {
+      throw new Response("Data nebyla nalezena", { status: 404 });
     }
-  } ,[error])
+  }, [error]);
 
   useEffect(() => {
+    if (
+      ownerInfo &&
+      ownerInfo?.id &&
+      user &&
+      user.id &&
+      friends
+    ) {
+      if (findFriendById(friends, user.id)) {
+        setRelations((prev) => ({ ...prev, isFriend: true }));
+      } else {
+        setRelations((prev) => ({ ...prev, isFriend: false }));
+      }
 
-    if (ownerCredentials && ownerCredentials?.username && user && user.username) {
-      if (ownerCredentials.username == user!.username) {
-        setIsOwner(true);
-      }else{ 
-        setIsOwner(false)
+      if (ownerInfo.id == user!.id) {
+        setRelations((prev) => ({ ...prev, isOwner: true }));
+      } else {
+        setRelations((prev) => ({ ...prev, isOwner: false }));
       }
     }
-  }, [ownerCredentials, user]);
-
+  }, [friends, ownerInfo, user]);
 
   if (isFetching) {
     return (
@@ -125,6 +151,63 @@ const Profile: React.FC = () => {
     setShowSettings(false);
   };
 
+  const friendAction = () => {
+    if (ownerInfo && ownerInfo.id && user && user.id) {
+      if (!relations.isFriend) {
+        axiosInstance
+          .post("/friends/send_invitation", {
+            user_id_1: ownerInfo.id,
+            user_id_2: user.id,
+          })
+          .then(({ data }) => {
+            if (data.sqlState) {
+              if (data.sqlState === "10000") {
+                setToastInfo("Pozvánka již byla odeslána.", "warning");
+              }
+            } else {
+              setToastInfo("Pozvánka úapěšně odeslána.", "success");
+            }
+          })
+          .catch(() => {
+            setToastInfo(
+              "Přátelství nebylo možné navázat. Zkuste to později.",
+              "error"
+            );
+          });
+      } else {
+        setToastInfo(`S uživatelem ${user.username} jste přátelé.`, "success");
+      }
+    }
+  };
+
+  const blockUser = () => {};
+
+  const removeFriend = () => {
+    if (ownerInfo && ownerInfo.id && user && user.id) {
+      axiosInstance.post("/friends/delete", {
+        user_id_1: ownerInfo?.id,
+        user_id_2: user.id,
+      })
+      .then(() => { 
+        setToastInfo(`Obebrali jste přítele ${user.username}` , "success")
+      })
+      .catch(err => console.log(err))
+    }
+  };
+
+  const getInTouch = () => {
+      if(!chats || !chats.some(chat => chat.id === user.id)){
+        dispatch(addChat({
+          id : user.id,
+          name : user.name,
+          profile_picture : user.profile_picture,
+          username : user.username
+        }))
+    
+      navigate("/chat/@me/" + user.username)
+    }
+  }
+
   return (
     <>
       <div className="min-h-screen w-full flex flex-col items-center justify-start">
@@ -145,11 +228,25 @@ const Profile: React.FC = () => {
                 >
                   Zavřít
                 </button>
-                {!isOwner && (
-                  <button className="flex items-center gap-1 m-2 px-4 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-500 transition">
-                    <SendIcon />
-                    <p>Napsat</p>
-                  </button>
+                {!relations.isOwner && (
+                  <>
+                    <Tooltip
+                      id="msg-btn"
+                      style={{ backgroundColor: "purple" }}
+                    />
+                    <button
+                      onClick={getInTouch}
+                      data-tooltip-content="Musíte být přátelé, abyste si mohli psát."
+                      data-tooltip-id="msg-btn"
+                      data-tooltip-place="bottom"
+                      data-tooltip-hidden={relations.isFriend}
+                      disabled={!relations.isFriend}
+                      className="flex items-center gap-1 m-2 px-4 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-500 transition disabled:bg-gray-500 disabled:hover:scale-100"
+                    >
+                      <SendIcon />
+                      <p>Napsat</p>
+                    </button>
+                  </>
                 )}
               </section>
             </div>
@@ -161,12 +258,12 @@ const Profile: React.FC = () => {
         )}
 
         <div
-          style={{ backgroundImage: `url(${BackgroundImage})` }}
-          className={`relative w-1/2 h-96 bg-cover bg-center rounded-xl flex items-center justify-center text-center`}
+          className={`relative w-full h-full bg-cover bg-center rounded-xl flex items-center justify-center text-center`}
         >
-          {isOwner && (
+        <ImageComponent For="theme-picture" user_id={user.id} src={user && user.theme_picture} disabled={!relations.isOwner}/>
+          {relations.isOwner && (
             <button
-              className="absolute top-5 -right-16 text-purple-500"
+              className="absolute top-5 right-16 text-purple-500"
               onClick={showSettings}
             >
               <FaEdit size={40} />
@@ -174,25 +271,54 @@ const Profile: React.FC = () => {
           )}
         </div>
 
-        <div className="relative w-full max-w-screen-sm -mt-10 px-4">
-          <div className="flex items-center">
-            <div>
-              <div className="w-20 h-20 rounded-full bg-gray-500 border-4 border-white"></div>
+        <div className="relative w-[50%] my-5 px-4 ">
+          <div className="w-full flex items-center justify-between">
+            <div className="flex items-center">
+              <div>
+                <ImageComponent For="profile-picture" user_id={user.id} src={user && user.profile_picture} disabled={!relations.isOwner} />
+              </div>
+              <div className="ml-4">
+                <h2 className="text-xl font-bold text-white">{account_id}</h2>
+                <button className="text-sm text-purple-400">
+                  <Link to="friends">Seznam přátel</Link>
+                </button>
+              </div>
             </div>
 
-            <div className="ml-4">
-              <h2 className="text-xl font-bold text-white">{account_id}</h2>
-              <button className="text-sm text-purple-400">
-                <Link to="friends">Seznam přátel</Link>
+            <div className="flex gap-10 w-full">
+              <button
+                onClick={showAboutMe}
+                className="ml-auto text-purple-500 border border-purple-500 py-3 px-5 rounded-md hover:bg-purple-500 hover:text-white transition"
+              >
+                O mně
               </button>
+              {!relations.isOwner && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={friendAction}
+                      className=" ml-auto bg-purple-700 text-white py-3 px-5 rounded-md hover:bg-purple-500 transition"
+                    >
+                      {!relations.isFriend ? (
+                        <p className="flex items-center gap-2">
+                          <AddPerson /> Přidat do přátel
+                        </p>
+                      ) : (
+                        <p className="flex items-center gap-2">
+                          <IsFriend /> Přátelé
+                        </p>
+                      )}
+                    </button>
+                  </div>
+                    <FriendOptions
+                      onBlockUser={blockUser}
+                      onRemoveFriend={removeFriend}
+                      isFriend={relations.isFriend}
+                    />
+                  
+                </>
+              )}
             </div>
-
-            <button
-              onClick={showAboutMe}
-              className="ml-auto bg-purple-700 text-white py-3 px-5 rounded-md hover:bg-purple-500 transition"
-            >
-              O mně
-            </button>
           </div>
         </div>
 
@@ -201,27 +327,33 @@ const Profile: React.FC = () => {
         </div>
 
         {location.pathname.includes("friends") ? (
-          <Outlet context={{ user_id : user.id }}  />
+          <Outlet context={{ user_id: user.id }} />
         ) : (
           <>
             <div className="w-full max-w-screen-sm mt-8 px-4">
               <h3 className="text-lg font-bold text-white">Zájmy</h3>
 
               <div className="flex flex-wrap gap-2 mt-4">
-                {interests.map((interest, index) => (
-                  <Link
-                    to={`/discover/users?selected_hobbies=${interest}`}
-                    key={index}
-                    className="bg-purple-500 text-white px-4 py-2 rounded-full text-sm shadow-md hover:bg-purple-600 cursor-pointer"
-                  >
-                    {interest}
-                  </Link>
-                ))}
+                {user.hobbies && user.hobbies ? (
+                  user.hobbies.split(",").map((interest, index) => (
+                    <Link
+                      to={`/discover/users?selected_hobbies=${interest}`}
+                      key={index}
+                      className="bg-purple-500 text-white px-4 py-2 rounded-full text-sm shadow-md hover:bg-purple-600 cursor-pointer"
+                    >
+                      {interest}
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-gray-500 pl-10">
+                    Uživatel nezveřejnil žádné zájmy.
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="w-full max-w-screen-sm mt-6 px-4">
-              <SavedStories isOwner={isOwner} />
+              <SavedStories isOwner={relations.isOwner} />
             </div>
 
             {user.id && (
@@ -229,7 +361,7 @@ const Profile: React.FC = () => {
                 <SubNavigation
                   userId={user.id}
                   username={account_id!}
-                  isOwner={isOwner}
+                  isOwner={relations.isOwner}
                 />
               </div>
             )}
@@ -308,6 +440,7 @@ const SubNavigation: React.FC<{
   const { data: posts, isFetching } = useFetch({
     fetchFn: fetchPosts,
     initialValue: [],
+    reCall: location.pathname,
   });
 
   const [activeTab, setActiveTab] = useState(activeSection.current || "posts");
@@ -342,56 +475,58 @@ const SubNavigation: React.FC<{
         </div>
       )}
 
-      {!isFetching && <div className="w-full mt-6">
-        {activeTab === "posts" && (
-          <section className="grid grid-cols-2 gap-5 p-5">
-            {(() => {
-              if (!posts.length)
-                return (
-                  <p className="text-gray-500 text-2xl text-nowrap">
-                    {!isOwner ? (
-                      <>
-                        <b>{username}</b> zatím nepřidal/a žádné příspěvky.{" "}
-                      </>
-                    ) : (
-                      "Zatím jste nepřidali žádné příspěvky."
-                    )}
-                  </p>
-                );
-              return posts.map((post) => (
-                <Post key={post.id} extended={false} post={post} />
-              ));
-            })()}
-          </section>
-        )}
-        {activeTab === "articles" && (
-          <div className="grid grid-cols-2 gap-5 p-5">
-            {(() => {
-              const userArticles = articles.filter(
-                (article) => article.author === username
-              );
-              if (!userArticles.length)
-                return (
-                  <>
+      {!isFetching && (
+        <div className="w-full mt-6">
+          {activeTab === "posts" && (
+            <section className="grid grid-cols-2 gap-5 p-5">
+              {(() => {
+                if (!posts.length)
+                  return (
                     <p className="text-gray-500 text-2xl text-nowrap">
                       {!isOwner ? (
                         <>
-                          <b>{username}</b> zatím nepublikoval/a žádné články.
+                          <b>{username}</b> zatím nepřidal/a žádné příspěvky.{" "}
                         </>
                       ) : (
-                        "Zatím jste nepublikovali žádné články."
+                        "Zatím jste nepřidali žádné příspěvky."
                       )}
                     </p>
-                  </>
+                  );
+                return posts.map((post) => (
+                  <Post key={post.id} extended={false} post={post} />
+                ));
+              })()}
+            </section>
+          )}
+          {activeTab === "articles" && (
+            <div className="grid grid-cols-2 gap-5 p-5">
+              {(() => {
+                const userArticles = articles.filter(
+                  (article) => article.author === username
                 );
+                if (!userArticles.length)
+                  return (
+                    <>
+                      <p className="text-gray-500 text-2xl text-nowrap">
+                        {!isOwner ? (
+                          <>
+                            <b>{username}</b> zatím nepublikoval/a žádné články.
+                          </>
+                        ) : (
+                          "Zatím jste nepublikovali žádné články."
+                        )}
+                      </p>
+                    </>
+                  );
 
-              return userArticles.map((article) => (
-                <Article key={article.id} {...article} extended={false} />
-              ));
-            })()}
-          </div>
-        )}
-      </div>}
+                return userArticles.map((article) => (
+                  <Article key={article.id} {...article} extended={false} />
+                ));
+              })()}
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 
-import ListOfFriends from "../../components/ListOfFriends";
+import ListOfFriends from "../../components/friends/ListOfFriends";
 import { Link, useLoaderData, useSearchParams } from "react-router-dom";
 
 import Post from "../../components/Post";
@@ -13,6 +13,7 @@ import Article from "../../components/Article";
 import UnSignedHome from "../unsigned/HomePage";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux-store";
+import axiosInstance from "../../axios/instance";
 
 interface postDataProps {
   id: number;
@@ -39,9 +40,22 @@ const SignedHome: React.FC = () => {
 
   
   const [activeView, setActiveView] = useSearchParams();
-  const loader = useLoaderData() as postDataProps[];
+  const [loader, setLoader] = useState([])
   const logged = useSelector<RootState>(state => state.auth.isAuth)
   const id : number = useSelector<RootState>(state => state.auth.userInfo?.id)
+
+  useLayoutEffect(() => { 
+    if(id){
+      axiosInstance.get("/posts" , { 
+        params : { 
+         user_id : id
+       },
+       withCredentials : true
+     }).then(({data}) => {
+      setLoader(data)
+     })
+    }
+  } , [id])
 
 
   if(!logged){ 
@@ -100,7 +114,7 @@ const SignedHome: React.FC = () => {
 
         
             {(activeSection === "příspěvky" || activeSection === null) && (
-              <div className="grid grid-cols-3 gap-10">
+              <div className="flex flex-col gap-5 justify-center px-60 pt-20 items-center min-w-[1000px]">
                 {loader && loader.map((post) => (
                   <Post key={post.id} extended={false} post={post} />
                 ))}

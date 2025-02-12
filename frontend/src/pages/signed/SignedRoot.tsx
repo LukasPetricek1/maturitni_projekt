@@ -1,20 +1,13 @@
 import React, { useLayoutEffect, useState } from "react";
-import {
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import MainNavBar from "../../components/MainNavBar";
 import Aside from "../../components/Aside";
 import { useDispatch } from "react-redux";
-import { login } from "../../redux-store/auth";
+import { loadFriends, loadInvites, login } from "../../redux-store/auth";
 import axiosInstance from "../../axios/instance";
 import { userProps } from "../Profile";
-import SignedHome from "./HomePage";
-import UnSignedHome from "../unsigned/HomePage";
 import { socket } from "../../main";
-// import { login } from "../../redux-store/auth";
 
 const SignedRoot: React.FC = () => {
   const location = useLocation();
@@ -27,53 +20,61 @@ const SignedRoot: React.FC = () => {
     status: "",
     username: "",
     website: "",
+    hobbies : ""
   });
-  // const loader = useLoaderData() as authProps || { err : string };
 
-  // useEffect(() => {
-  //   if(loader.err){
-
-  //   }else{
-  //     dispatch(login(loader))
-  //   }
-  // } , [dispatch, loader])
-
-  // const loader = useLoaderData() as authProps;
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
     axiosInstance
       .get("/verify")
-      .then((response) => {
-        if (response.statusText === "OK") {
+      .then(async (response) => {
+        if (response.data.error === "email_unverified") {
+          const { email } = response.data;
+          navigate("/login/verify/"+email);
+        } else if (response.statusText === "OK") {
           setUserInfo(response.data);
-          const { username, name, email, id, website, bio } = response.data;
+          const { username, name, email, id, website, bio, hobbies, profile_picture , theme_picture } =
+            response.data;
           dispatch(
             login({
-              isAuth : true,
+              isAuth: true,
               credentials: { username, name, email },
-              userInfo: { id, website, bio, hobbies: [] },
+              userInfo: { id, website, bio, hobbies , profile_picture , theme_picture },
             })
           );
-          socket.emit("register" , username)
+          socket.emit("register", username);
+
+          await axiosInstance
+            .get(`users/${id}/friends`)
+            .then((response) => {
+              if (response.data) {
+                const data = response.data;
+                dispatch(loadFriends(data))
+              }
+            })
+            .catch((err) => console.log(err));
+
+          await axiosInstance
+            .get("/friends/invitations?user_id=" + id)
+            .then(({ data }) => {
+              dispatch(loadInvites(data));
+            })
+            .catch((err) => console.log(err));
         }
       })
       .catch((err) => {
         if (!err.ok) {
-          if(!["/login" , "/signup"].some(href => location.pathname.includes(href))){
+          if (
+            !["/login", "/signup"].some((href) =>
+              location.pathname.includes(href)
+            )
+          ) {
             navigate("/");
           }
         }
       });
-    // console.log(loader)
-    // if((loader as AxiosError).isAxiosError){
-    //   console.log("unloged")
-    //   setLogged(false)
-    // }else{
-    //   setLogged(true)
-    //   dispatch(login(loader))
-    // }
   }, []);
 
   const chat = location.pathname.includes("chat");

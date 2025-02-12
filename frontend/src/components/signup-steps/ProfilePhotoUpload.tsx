@@ -1,5 +1,8 @@
 import React, { useState, useRef } from "react";
 import { RiDragDropLine as DragAndDropImage } from "react-icons/ri";
+import axiosInstance from "../../axios/instance";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux-store";
 
 interface Props {
   onComplete: () => void;
@@ -9,6 +12,8 @@ const ProfilePhotoUpload: React.FC<Props> = ({ onComplete }) => {
   const imageInput = useRef<HTMLInputElement>(null);
   const [photo, setPhoto] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
+
+  const username = useSelector<RootState>(state => state.auth.credentials?.username)
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -45,7 +50,9 @@ const ProfilePhotoUpload: React.FC<Props> = ({ onComplete }) => {
   };
 
   const nextStep = () => {
-    onComplete();
+    const formData = new FormData()
+    formData.append("image" , photo!)
+    axiosInstance.post(`/users/${username}/profile_picture` , formData)
   };
 
   const skip = () => { 
@@ -53,7 +60,7 @@ const ProfilePhotoUpload: React.FC<Props> = ({ onComplete }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-white">
+    <div className="flex flex-col items-center justify-center min-w-[100vw] min-h-screen text-white">
 
       <div className="absolute top-8 left-8 text-sm font-medium text-purple-400">
         2/5

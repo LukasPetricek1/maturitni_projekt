@@ -29,7 +29,7 @@ export default function Toast({ message, type = "warning", onClose, duration = 1
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 100 }}
-      className={`absolute bottom-5 left-5 px-4 py-2 text-white rounded-lg shadow-lg flex items-center gap-2 z-50 ${toastVariants[type]} select-none`}
+      className={`fixed bottom-5 left-5 px-4 py-2 text-white rounded-lg shadow-lg flex items-center gap-2 z-[999] ${toastVariants[type]} select-none`}
     >
       <span>{message}</span>
       <button onClick={onClose} className="text-white">

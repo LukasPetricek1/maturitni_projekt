@@ -1,12 +1,16 @@
 const nodemailer = require("nodemailer")
-const sendGridTransport = require("nodemailer-sendgrid-transport")
 
-const API_KEY = process.env.SENDGRID_API
-
-const transporter = nodemailer.createTransport(sendGridTransport({
+const transporter = nodemailer.createTransport({ 
+  host : "smtp.sendgrid.net",
+  port : 587, 
+  secure : false, 
   auth : {
-    api_key: API_KEY
+    user : "apikey",
+    pass : process.env.SENDGRID_KEY
+  },
+  tls : { 
+    rejectUnauthorized : false
   }
-}))
+})
 
 module.exports = transporter;

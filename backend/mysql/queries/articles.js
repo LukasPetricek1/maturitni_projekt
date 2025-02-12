@@ -1,0 +1,1 @@
+const CREATE_ARTICLE = (user_id, content, title, subtitle) => ``

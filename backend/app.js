@@ -8,7 +8,9 @@ const jwt = require("jsonwebtoken")
 
 const connectDB = require("./mysql/connection");
 const { checkRecordExists } = require('./mysql/functions');
-const { verify } = require('./controllers/authController');
+const UserController = require("./controllers/users")
+const { upload } = require("./upload/multer");
+const axiosInstance = require("./axios/instance")
 
 var app = express();
 
@@ -16,7 +18,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(cors({
-  origin : "http://localhost:5173",
+  origin : process.env.FRONTEND_URL,
   credentials : true
 }))
 
@@ -36,9 +38,22 @@ app.use("/" , require("./routes/authRoutes"))
 
 app.use("/mail" , require("./routes/mailRoutes"))
 
+app.get("/email/exists" , UserController.isEmailExists)
+app.get("/username/exists" , UserController.isUsernameExists)
+
+app.post("/users/:username/profile_picture" , upload.single("image") ,  UserController.uploadProfilePicture )
+
+app.use("/upload" , require("./routes/uploadRoutes"))
+
+const unverify_routes = ["/hobbies/add" , "/hobbies/connect" , "/hobbies/get"]
+
 app.use(async function(req, res , next){
-  
+  if(unverify_routes.some(value => value === req.url)){
+    next()
+    return;
+  }
   const { jwt_token } = req.cookies;
+
 
   if(jwt_token){ 
     try{ 
@@ -46,14 +61,23 @@ app.use(async function(req, res , next){
   
       if(verify){ 
         const existingUser = await checkRecordExists("users", "email", verify.email);
+
+        if(existingUser.verified === "no"){ 
+          res.clearCookie("jwt_token" , { httpOnly : true})
+          return res.send({ error : "email_unverified" , email : existingUser.email})
+        }
+
         req.user_data = existingUser;
         req.decoded_token = verify
+        
+      
 
         next()
       }else{
         res.status(403).json({ error : "unauthorized"})
       }
     }catch(err){ 
+      console.log(err)
       if(err.name === "TokenExpiredError"){ 
         res.clearCookie("jwt_token" , { httpOnly : true})
         return res.status(403).json({ error : "expirated token"})
@@ -67,8 +91,17 @@ app.use(async function(req, res , next){
 
 app.get("/verify" , async function(req, res ){
   if(req.user_data){ 
-    res.json(req.user_data)
+    let userData = req.user_data
+    
+    const user_hobbies = await axiosInstance.post("/hobbies/get", { username : req.user_data.username})
+    const hobbies = user_hobbies.data.map(hobby => hobby.name)
+
+    return res.json({ 
+      ...userData,
+      hobbies
+    })
   }
+  res.sendStatus(403)
 })
 
 // Endpoints
@@ -78,6 +111,8 @@ app.use("/stories" , require("./routes/stories"))
 app.use("/inbox" , require("./routes/inbox"))
 app.use("/users" , require("./routes/users"))
 app.use("/channels" , require("./routes/channels"))
+app.use("/hobbies" , require("./routes/hobbyRoutes"))
+app.use("/friends" , require("./routes/friends"))
 
 connectDB()
 

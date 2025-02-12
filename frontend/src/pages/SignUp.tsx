@@ -1,6 +1,5 @@
-import React, { useState, ChangeEvent, FormEvent , useRef } from "react";
-import { Link , useSearchParams , useLoaderData , Navigate , useNavigate } from "react-router-dom";
-// import axios from "axios"
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { Link , useSearchParams , Navigate } from "react-router-dom";
 
 import { useDispatch} from "react-redux";
 import { register } from "../redux-store/auth";
@@ -8,17 +7,15 @@ import { register } from "../redux-store/auth";
 import UserInput from "../components/UserInput";
 import AlternativeSign from "../components/AlternativeSign";
 import Logo from "../components/Logo";
-// import Modal , { DialogHandle } from "../components/Modal";
-// import Toast from "../components/Toast";
+import Toast from "../components/Toast";
 
 import ProfilePhotoUpload from "../components/signup-steps/ProfilePhotoUpload";
 import AddUserInfo from "../components/signup-steps/AddUserInfo" 
 import WelcomeScreen from "../components/signup-steps/Welcome";
 import PasswordCheck from "./PasswordCheck";
 import InputCheck from "./InputCheck";
+import axiosInstance from "../axios/instance";
 
-
-// const domain = "http://localhost:3000"
 
 interface FormData {
   name: string;
@@ -33,16 +30,13 @@ export interface LoaderProps{
 }
 
 const Signup: React.FC = () => {
-  // const navigate = useNavigate()
-  // const modal = useRef<DialogHandle>(null);
-
-  // const loader_data  = useLoaderData() as LoaderProps;
-  // const has_recorded_id = localStorage.getItem("user-id")
-
-  // const userInfo = useSelector<RootState>(state => state.auth)
   const dispatch = useDispatch()
 
-  // const [showToast, setShowToast] = useState(false);
+  const [toastInfo, setToastInfo] = useState({
+    message: "",
+    type: "",
+  });
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [secondPassword, setSecondPassword] = useState("")
   const [validPassword, setValidPassword] = useState(false)
@@ -52,54 +46,63 @@ const Signup: React.FC = () => {
     email: "",
     password: "",
   });
-  const [didEdit, setDidEdit] = useState(false)
   const [valid, setValid] = useState({ 
-      username : true
+      username : true,
+      name : true
     })
 
   const ValidFormData =  (formData.email.length > 0 && formData.name.length > 0 && formData.username.length > 0 && formData.password.length > 0)
   
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    setDidEdit(true)
     setFormData({ ...formData, [name]: name === "name" ? value : value.trim() });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    if(validPassword && formData.password === secondPassword){ 
+
+    let ok = true
+
+    await axiosInstance.get("/username/exists?username="+formData.username)
+    .then(({ data }) => { 
+      if(data.error){ 
+        if(data.error === "username_exists"){ 
+          setToastInfo({ message : `Uživatelské jméno ${formData.username} už existuje.` , type : "error"})
+          ok = false
+        }
+      }
+    })
+
+    await axiosInstance.get("/email/exists?email="+formData.email)
+      .then(({ data }) => { 
+        if(data.error){ 
+          if(data.error === "email_exists"){ 
+            setToastInfo({ message : `Email ${formData.email} už existuje.` , type : "error"})
+            ok = false
+          }
+        }
+      })
+
+    if(ok && valid.username && valid.name && validPassword && formData.password === secondPassword){ 
     
       dispatch(register(formData))
 
       setSearchParams({ step : "upload-profile-picture"})
     }else{ 
-      if(!validPassword){ 
-        alert("Vaše heslo nesplňuje daná kritéria.")
+      if(!valid.name){
+        setToastInfo({ message : "Vaše jméno nesplňuje daná kritéria." , type : "error"})
       }
-      alert("Vaše hesla se neshodují.")
+      else if(!valid.username){
+        setToastInfo({ message : "Vaše uživatelské jméno nesplňuje daná kritéria." , type : "error"})
+      }
+      else if(!validPassword){ 
+        setToastInfo({ message : "Vaše heslo nesplňuje daná kritéria." , type : "error"})
+      }
+      else if(formData.password !== secondPassword){ 
+        setToastInfo({ message : "Vaše hesla se neshodují" , type : "error"})
+      }
     }
   };
-
-  // const handleCancel = () => { 
-  //     modal.current!.close()
-  // }
-
-  // const handleConfirm = async () => {
-  //   // const { email , username, name } = loader_data["user-credentials"]!
-  //   // await dispatch(register({ name , username , email }))
-
-  //   navigate("/login")
-  //   // navigate("/login")
-  //   // if(loader_data && loader_data["user-credentials"]){ 
-  //   //   setFormData(prev => {
-  //   //     return {
-  //   //       ...prev,
-  //   //       ...loader_data["user-credentials"]
-  //   //     }
-  //   //   })
-  //   // }
-  //   // handleCancel()
-  // }
 
   if(searchParams.size > 0 && !ValidFormData){
     return <Navigate to="/signup" />
@@ -121,26 +124,24 @@ const Signup: React.FC = () => {
     )
   }
 
+  const closeToast = () => { 
+    setToastInfo({
+      message :"",
+      type :""
+    })
+  }
+
 
   return (
     <>
-    {/* {showToast && <Toast type="success" duration={2000} message="Přihlášení proběhlo úspěšně." onClose={() => setShowToast(false)} />} */}
-    {/* {!didEdit && !ValidFormData && <Modal
-        ref={modal}
-        onCancel={handleCancel}
-        onConfirm={handleConfirm}
-        cancelText="Ne"
-        confirmText="Ano"
-        instant
-      >
-        <>
-          <p className="mb-2 text-lg font-medium">
-            Přejete se přihlásit ?
-          </p>
-          <p className="mb-4 text-gray-600">jako</p>
-          <p className="mb-6 text-gray-800 font-semibold">{loader_data["user-credentials"] && loader_data["user-credentials"].email}</p>
-        </>
-      </Modal>} */}
+
+    {toastInfo.message && toastInfo.type && (
+              <Toast
+                message={toastInfo.message}
+                type={toastInfo.type}
+                onClose={closeToast}
+              />
+      )}
     <div className="flex items-center justify-center w-screen h-full">
       <div className="flex w-11/12 max-w-5xl h-4/5 bg-gray-900 rounded-lg shadow-lg overflow-hidden">
         

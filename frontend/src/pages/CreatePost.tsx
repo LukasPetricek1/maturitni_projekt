@@ -2,8 +2,12 @@ import React, { FormEvent, useState } from "react";
 import MediaUploadSection from "../components/MediaUploadSection";
 import axiosInstance from "../axios/instance";
 import Toast from "../components/Toast";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux-store";
 
 const CreatePost: React.FC = () => {
+  const navigate = useNavigate()
   const [postInfo , setPostInfo] = useState({ 
     name : "" ,
     description : ""
@@ -13,6 +17,7 @@ const CreatePost: React.FC = () => {
     type : ""
   })
   const [mediaFile, setMediaFile] = useState<File>();
+  const user_id = useSelector<RootState>(state => state.auth.userInfo?.id)
 
   const close = () => {
     setToast({ message :"" , type :""})
@@ -25,12 +30,19 @@ const CreatePost: React.FC = () => {
         formData.append("image", mediaFile);
         formData.append("description" , postInfo.description)
         formData.append("name" , postInfo.name)
-        await axiosInstance.post("/posts/create", formData);
 
-        setToast({
-          message : "Příspěvek byl úspěšně vytvořen",
-          type: "success"
-        })
+        const { data } = await axiosInstance.post("/posts/create?user_id=" + user_id, formData);
+        if(data.error){ 
+          console.log(data.error)
+        }else{ 
+          setToast({
+            message : "Příspěvek byl úspěšně vytvořen",
+            type: "success"
+          })
+          setTimeout(() => { 
+            navigate("/")
+          } , 2000)
+        }
     } else {
       if(!mediaFile){
         setToast({ 

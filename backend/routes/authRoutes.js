@@ -1,7 +1,6 @@
 const express = require("express")
 const jwt = require("jsonwebtoken")
 const { register, login, token , logout } = require("../controllers/authController")
-const { checkRecordExists } = require("../mysql/functions")
 
 const router = express.Router()
 

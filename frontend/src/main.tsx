@@ -7,6 +7,7 @@ import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { store } from "./redux-store/index.ts";
 
+import  'react-tooltip/dist/react-tooltip.css'
 import "./index.css";
 
 export const socket = io("http://localhost:3000")
