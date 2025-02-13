@@ -13,12 +13,11 @@ interface ContentProps {
 }
 
 const Content: React.FC<ContentProps> = ({ post }) => {
-  if (post.type.includes("image")) {
+  if (/(jpe?g|png|gif|bmp|webp|heic|heif|tiff?)$/i.test(post.type)) {
     return (
       <img className="rounded-md p-10 h-full" src={post.src} alt="something." />
     );
   }
-
   return <></>;
 };
 

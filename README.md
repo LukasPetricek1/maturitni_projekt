@@ -62,6 +62,8 @@ Aplikace poběží na **http://localhost:5173**.
 
 ---
 
+Aplikace předpokládá, že databáze je přístupná na localhost:3306 s uživatelem root s heslem root. Případné změny musíte provést v souboru ./src/db.php.
+
 ## Závislosti
 
 ### Produkční závislosti

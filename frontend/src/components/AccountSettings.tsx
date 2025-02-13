@@ -65,40 +65,75 @@ const AccountSettings: React.FC<AccountSettings> = ({
     return status;
   };
 
-  interface props{
-    toAdd : string[],
-    toDelete : string[]
+  interface props {
+    toAdd: string[];
+    toDelete: string[];
   }
 
-  function findDifferenceBetweenArrays(a : string[], b : string[]) : props { 
+  function findDifferenceBetweenArrays(a: string[], b: string[]): props {
     const bigger = a;
     const smaller = b;
 
-    const toAdd = smaller.filter(item => !bigger.includes(item))
-    const toDelete = bigger.filter(item => !smaller.includes(item))
+    const toAdd = smaller.filter((item) => !bigger.includes(item));
+    const toDelete = bigger.filter((item) => !smaller.includes(item));
 
-    return { 
-      toAdd , 
-      toDelete
-    }
+    return {
+      toAdd,
+      toDelete,
+    };
   }
 
-  const send = () => {
+  const send = async () => {
     const isChanges = didUserChangeInfo();
-    console.log(isChanges);
     if (!isChanges) {
       setToastInfo("Nic jste nezměnili.", "warning");
       return;
     }
     const { name, username, web, email } = valid;
     if (name && username && web && email) {
+      let ok = true;
+
+      if (initialData.username !== userData.username) {
+        await axiosInstance
+          .get("/username/exists?username=" + userData.username)
+          .then(({ data }) => {
+            if (data.error) {
+              if (data.error === "username_exists") {
+                setToastInfo(
+                  `Uživatelské jméno ${userData.username} už existuje.`,
+                  "error"
+                );
+                ok = false;
+              }
+            }
+          });
+      }
+
+      if (initialData.email !== userData.email) {
+        await axiosInstance
+          .get("/email/exists?email=" + userData.email)
+          .then(({ data }) => {
+            if (data.error) {
+              if (data.error === "email_exists") {
+                setToastInfo(`Email ${userData.email} už existuje.`, "error");
+                ok = false;
+              }
+            }
+          });
+      }
+
+      if (!ok) return;
+
       if (hobbies.all_hobbies.length >= 3) {
         const sameEmail = initialData.email === userData.email;
 
         const prevHobbies = initialData.hobbies.split(",");
         const currentHobbies = hobbies.all_hobbies;
 
-        const hobbiesDifference = findDifferenceBetweenArrays(prevHobbies, currentHobbies)
+        const hobbiesDifference = findDifferenceBetweenArrays(
+          prevHobbies,
+          currentHobbies
+        );
 
         axiosInstance
           .post("/users/update-info", {
@@ -111,31 +146,34 @@ const AccountSettings: React.FC<AccountSettings> = ({
           })
           .then(async () => {
             try {
-                if(hobbiesDifference.toDelete.length){ 
-                  for(const deleteHobby of  hobbiesDifference.toDelete){ 
-                    await axiosInstance.post("/hobbies/delete" , { user_id : userData.id, hobby : deleteHobby})
-                  }
+              if (hobbiesDifference.toDelete.length) {
+                for (const deleteHobby of hobbiesDifference.toDelete) {
+                  await axiosInstance.post("/hobbies/delete", {
+                    user_id: userData.id,
+                    hobby: deleteHobby,
+                  });
                 }
-                if(hobbiesDifference.toAdd.length){
-                  for(const addHobby of hobbiesDifference.toAdd){
-                    const hobby_response = await axiosInstance.post(
-                                    "/hobbies/add",
-                                    { hobby : addHobby }
-                                  );
-                                  const hobby_id = hobby_response.data[1][0].id;
-                
-                                  await axiosInstance.post("/hobbies/connect", {
-                                    user_id: initialData.id,
-                                    hobby_id,
-                                  });
-                                }
-                  }
-                
-              if(!sameEmail){ 
-                dispatch(changeEmail(userData.email))
-                window.location.href = "/login/verify/" + userData.email
               }
-              dispatch(updateHobbies(currentHobbies))
+              if (hobbiesDifference.toAdd.length) {
+                for (const addHobby of hobbiesDifference.toAdd) {
+                  const hobby_response = await axiosInstance.post(
+                    "/hobbies/add",
+                    { hobby: addHobby }
+                  );
+                  const hobby_id = hobby_response.data[1][0].id;
+
+                  await axiosInstance.post("/hobbies/connect", {
+                    user_id: initialData.id,
+                    hobby_id,
+                  });
+                }
+              }
+
+              if (!sameEmail) {
+                dispatch(changeEmail(userData.email));
+                window.location.href = "/login/verify/" + userData.email;
+              }
+              dispatch(updateHobbies(currentHobbies));
 
               setToastInfo(
                 "Úspěšně jste aktualizovali svoje informace.",

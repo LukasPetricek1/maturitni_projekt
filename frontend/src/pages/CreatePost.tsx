@@ -25,16 +25,19 @@ const CreatePost: React.FC = () => {
 
   const publish = async (event : FormEvent) => {
     event.preventDefault()
-    if (mediaFile && postInfo.description && postInfo.name) {
+    if (mediaFile && postInfo.description && postInfo.name && user_id) {
         const formData = new FormData();
         formData.append("image", mediaFile);
         formData.append("description" , postInfo.description)
         formData.append("name" , postInfo.name)
 
-        const { data } = await axiosInstance.post("/posts/create?user_id=" + user_id, formData);
-        if(data.error){ 
-          console.log(data.error)
-        }else{ 
+        try{
+          const response = await axiosInstance.post(`/upload/image?location=posts&type=post&user_id=${user_id}`, formData);
+         
+          const { fileURL , extension } = response.data
+
+          await axiosInstance.post("/posts/create?user_id=" + user_id, { description : postInfo.description , name : postInfo.name, fileURL , extension});
+
           setToast({
             message : "Příspěvek byl úspěšně vytvořen",
             type: "success"
@@ -42,7 +45,10 @@ const CreatePost: React.FC = () => {
           setTimeout(() => { 
             navigate("/")
           } , 2000)
+        }catch(err){ 
+          console.log(err)
         }
+        
     } else {
       if(!mediaFile){
         setToast({ 
