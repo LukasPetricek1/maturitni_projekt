@@ -1,4 +1,5 @@
-# Fadigram - sociální aplikace
+# Fadigram - sociální aplikace (lokálně nefunguje)
+## Pro Lokální spuštění je nutné mít přástup ke službám AWS S3 Cloud   a SendGrid
 
 <span style="color:red">FA</span>cebook
 <span style="color:red">DI</span>scord
@@ -15,6 +16,13 @@ insta<span style="color:red">GRAM</span>
    git clone https://github.com/LukasPetricek1/maturitni_projekt
    cd maturitni_projekt
    ```
+   
+# Databáze
+* MySQL
+* Běží na PORTU 3306
+* Konfigurace `./backend/mysql/connection.js`
+* Základací skript `./backend/mysql/create_social_app.sql` <br>
+#### Je potřeba nadefinovat proménně pro databázi viz. [Konfigurace](#Konfigurace)
 
 # Struktura FRONTENDU
 
@@ -157,18 +165,47 @@ npm run preview
    npm install
    ```
 2. Vytvořte `.env` soubor ve složce **backend** a nastavte požadované proměnné prostředí (viz sekce **Konfigurace**).
+
 ## Konfigurace
 
 ```env
-PORT=PORT (PORT na kterém poběží server)
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=heslo
-DB_NAME=fadigram
-JWT_SECRET=nejake_tajne_heslo (slouží k podpisu JWT tokenů)
-AWS_ACCESS_KEY_ID=vas_aws_klic
-AWS_SECRET_ACCESS_KEY=vas_aws_secret
-AWS_BUCKET_NAME=vas_s3_bucket
+--- Databáze ---  
+DB_HOST=${db-host}
+DB_USER=${db-user}
+DB_PASSWORD=${db-password}
+DB_NAME=${db-name}
+
+--- JsonWebToken secret ---
+JWT_SECRET=${secret}
+
+### AWS nastavení
+
+* Přihlaste se do AWS Console.
+* Otevřete službu Amazon S3.
+* Klikněte na Create bucket.
+* Zadejte název bucketu (např. fadigram).
+* Vyberte region (nejspíše se vybere automaticky).
+* Klikněte na Create bucket.
+* Vytvořte IAM uživatele s přístupem k S3
+* Otevřete AWS IAM konzoli.
+* Přejděte do sekce Users → Create user.
+* Zadejte jméno uživatele.
+* Vygenerujte si Access Key
+* Uložte Access key a Secret Access key
+
+--- AWS S3 Cloud ---
+AWS_BUCKET_REGION=${region}
+AWS_ACCESS_KEY_ID=${access-key}
+AWS_SECRET_ACCESS_KEY=${secret-key}
+AWS_BUCKET_NAME=${bucket-name}
+
+--- SendGrid Mail ---
+SENDGRID_KEY=${sendgrid-key}
+
+--- Obecné ---
+PORT=${PORT}
+FRONTEND_URL=http://localhost:5173
+BACKEND_URL=${PORT}
 ```
 3. Spusťte aplikaci:
    ```sh
