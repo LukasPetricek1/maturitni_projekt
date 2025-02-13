@@ -25,7 +25,11 @@ exports.uploadImage = async function(req, res){
     await s3.send(command) 
     const fileURL = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${params.Key}`
 
-    if(type === "profile-picture"){ 
+    if(type === "post"){ 
+      console.log("Post")
+      return res.json({ fileURL, extension })
+    }
+    else if(type === "profile-picture"){ 
       console.log("Profile-picture")
       console.log(req.file)
       await updateProfilePicture(fileURL, user_id)

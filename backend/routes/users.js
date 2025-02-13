@@ -1,26 +1,22 @@
 const express = require("express")
 const router = express.Router()
 
-const { upload } = require("../upload/multer")
-
-const UserController = require("../controllers/users")
-const PostsController = require("../controllers/posts")
+const { getAllUsers , getAllOtherUsers, discoverUserByHobby, getUser, getUserFriends , updateUserInfo} = require("../controllers/users")
+const { getUserPosts} = require("../controllers/posts")
 
 
+router.get("/" , getAllUsers)
 
+router.get("/other" , getAllOtherUsers)
 
-router.get("/" , UserController.getAllUsers)
+router.get("/posts" , getUserPosts)
 
-router.get("/other" , UserController.getAllOtherUsers)
+router.get("/discover", discoverUserByHobby);
 
-router.get("/posts" , PostsController.getUserPosts)
+router.get("/:username" , getUser)
 
-router.get("/discover", UserController.discoverUserByHobby);
+router.get("/:user_id/friends" , getUserFriends)
 
-router.get("/:username" , UserController.getUser)
-
-router.get("/:user_id/friends" , UserController.getUserFriends)
-
-router.post("/update-info" , UserController.updateUserInfo)
+router.post("/update-info" , updateUserInfo)
 
 module.exports = router;

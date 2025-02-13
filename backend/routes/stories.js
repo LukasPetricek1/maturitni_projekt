@@ -1,14 +1,14 @@
 const express = require("express")
 const router = express.Router()
 
-const StoryController = require("../controllers/stories")
+const { getStory , createStory , archiveStory, deleteArchivedStory} = require("../controllers/stories")
 
-router.get("/:story_id" , StoryController.getStory)
+router.get("/:story_id" , getStory)
 
-router.post("/create" , StoryController.createStory)
+router.post("/create" , createStory)
 
-router.put("/archive/:story_id" , StoryController.archiveStory)
+router.put("/archive/:story_id" , archiveStory)
 
-router.delete("/archive/:story_id" , StoryController.deleteArchivedStory)
+router.delete("/archive/:story_id" , deleteArchivedStory)
 
 module.exports = router;

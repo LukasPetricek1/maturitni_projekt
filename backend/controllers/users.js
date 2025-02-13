@@ -1,8 +1,5 @@
 const UserQueries = require("../mysql/queries/user")
 
-const s3 = require("../upload/s3")
-const { PutObjectCommand } = require("@aws-sdk/client-s3")
-
 const { getAllUsers , getUser , discoverUser , updateUserInfoFunction} = require("../mysql/functions/users")
 const { generateAccessToken } = require("./authController") 
 
@@ -35,6 +32,8 @@ exports.updateUserInfo = async function(req, res){
       const access_token = generateAccessToken(email)
       res.clearCookie("jwt_token" , { httpOnly : true})
       res.cookie("jwt_token" , access_token , { httpOnly : true })
+
+      
     }
     res.send("updated")
   } catch (error) {
@@ -120,37 +119,4 @@ exports.isUsernameExists = function(req, res){
       console.log(err)
       res.status(500).send({ error : err})
     })
-}
-
-
-
-exports.uploadProfilePicture = async function(req, res){ 
-  const { username } = req.params;
-  const buffer = req.file.buffer;
-
-  const params = { 
-    Bucket : process.env.AWS_BUCKET_NAME,
-    // Key: randomImageName(),
-    Key : `public/${Date.now()}-${req.file.originalname}`,
-    Body : buffer,
-    ContentType : req.file.mimetype
-  }
-
-  try {
-    const command = new PutObjectCommand(params)
-
-    await s3.send(command) 
-    const fileURL = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${params.Key}`
-
-    
-    
-  
-  }catch(err){ 
-    if(err){ 
-      console.log(err)
-      return res.sendStatus(501) 
-    }
-  }
-
-  res.send( "hi")
 }

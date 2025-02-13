@@ -2,7 +2,6 @@ const { v4 : uuidv4 } = require("uuid")
 const jwt = require("jsonwebtoken")
 const userSchema = require("../mysql/schemas/userSchema")
 const bcrypt = require("bcryptjs")
-const crypto = require("crypto")
 
 const axiosInstance = require("../axios/instance")
 
@@ -21,21 +20,19 @@ const token = (req, res) => {
 
 }
 
-const verify = async (req, res) => { 
-  const { jwt_token } = req.cookies
+const verify = async function(req, res ){
+  if(req.user_data){ 
+    let userData = req.user_data
+    
+    const user_hobbies = await axiosInstance.post("/hobbies/get", { username : req.user_data.username})
+    const hobbies = user_hobbies.data.map(hobby => hobby.name)
 
-  if(jwt_token){ 
-    const verify = jwt.verify(jwt_token , process.env.JWT_SECRET)
-  
-    if(verify){ 
-      const existingUser = await checkRecordExists("users", "email", verify.email);
-      res.json(existingUser)
-    }else{
-      res.status(401).json({ error : "unauthorized"})
-    }
-  }else{ 
-    res.status(401).json({ error : "missing access token"})
+    return res.json({ 
+      ...userData,
+      hobbies
+    })
   }
+  res.sendStatus(403)
 }
 
 const logout = (req, res) => { 
@@ -90,6 +87,7 @@ const register = async (req, res) => {
         res.status(201).json({ message: "User created successfully!" , id : user.specific_id});
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error: error.message });
     }
 

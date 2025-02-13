@@ -8,5 +8,4 @@ const {  uploadImage } = require("../controllers/uploadController")
 router.post("/image" , upload.single("image"), uploadImage)
 
 
-
 module.exports = router;

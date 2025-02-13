@@ -4,16 +4,16 @@ const { upload } = require("../upload/multer")
 
 const router = express.Router()
 
-const PostController = require("../controllers/posts")
+const { getAllPosts , getPost , createPost , archivePost , deleteArchivedPost} = require("../controllers/posts")
 
-router.get("/" , PostController.getAllPosts)
+router.get("/" , getAllPosts)
 
-router.get("/:post_id" , PostController.getPost)
+router.get("/:post_id" , getPost)
 
-router.post("/create" , upload.single("image") ,  PostController.createPost)
+router.post("/create" , upload.single("image") , createPost)
 
-router.put("/archive/:post_id" , PostController.archivePost)
+router.put("/archive/:post_id" , archivePost)
 
-router.delete("/archive/:post_id" , PostController.deleteArchivedPost)
+router.delete("/archive/:post_id" , deleteArchivedPost)
 
 module.exports = router;
