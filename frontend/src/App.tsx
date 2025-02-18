@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import SignedRoot from "./pages/signed/SignedRoot.tsx";
@@ -30,8 +30,10 @@ import Verify from "./pages/Verify.tsx";
 import { postPageLoader } from "./loaders/PostPageLoader.tsx";
 import Toast from "./components/Toast.tsx";
 
-import { AppContext } from "./Context/AppContext.tsx";
+import { AppContext, AppContextProps } from "./Context/AppContext.tsx";
 import CreateOrganization from "./pages/chat/CreateOrganization.tsx";
+import { onLike } from "./utils/functions/onLike.ts";
+import { SocketProvider } from "./Context/SocketContext.tsx";
 
 const signedRouter = createBrowserRouter([
   {
@@ -74,8 +76,8 @@ const signedRouter = createBrowserRouter([
             ],
           },
           {
-            path : "create_organization",
-            element : <CreateOrganization />
+            path: "create_organization",
+            element: <CreateOrganization />,
           },
           {
             path: ":org_id",
@@ -122,7 +124,7 @@ const signedRouter = createBrowserRouter([
       {
         path: "/post/:post_id",
         element: <PostPage />,
-        loader: postPageLoader,
+        // loader: postPageLoader,
       },
       {
         path: "/article/:article_id",
@@ -157,32 +159,38 @@ const signedRouter = createBrowserRouter([
 ]);
 
 const App: React.FC = () => {
+  const [toastInfo, setToastInfo] = useState({
+    message: "",
+    type: "",
+  });
 
-    const [toastInfo, setToastInfo] = useState({
+  const closeToast = () => {
+    setToastInfo({
       message: "",
       type: "",
     });
-
-    const closeToast = () => { 
-      setToastInfo({ 
-        message : "",
-        type : ""
-      })
-    }
+  };
 
   return (
-    <>
-      <AppContext.Provider value={{  setToastInfo : (message : string, type : string) => setToastInfo({ message , type})}}>
-      {toastInfo.message && toastInfo.type && (
-        <Toast
-          message={toastInfo.message}
-          type={toastInfo.type}
-          onClose={closeToast}
-        />
-      )}
+    <SocketProvider>
+      <AppContext.Provider
+        value={{
+          setToastInfo: (message: string, type: string) =>
+            setToastInfo({ message, type }),
+            toastMessage: toastInfo.message,
+            onLike : onLike
+        }}
+      >
+        {toastInfo.message && toastInfo.type && (
+          <Toast
+            message={toastInfo.message}
+            type={toastInfo.type}
+            onClose={closeToast}
+          />
+        )}
         <RouterProvider router={signedRouter}></RouterProvider>
       </AppContext.Provider>
-    </>
+    </SocketProvider>
   );
 };
 

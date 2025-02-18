@@ -9,6 +9,7 @@ import { store } from "./redux-store/index.ts";
 
 import  'react-tooltip/dist/react-tooltip.css'
 import "./index.css";
+import "./Editor.css"
 
 export const socket = io("http://localhost:3000")
 

@@ -1,4 +1,5 @@
 # FRONTEND
+frontend/.npmrc
 frontend/logs
 frontend/*.log
 frontend/npm-debug.log*

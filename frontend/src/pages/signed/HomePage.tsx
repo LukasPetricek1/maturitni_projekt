@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useState } from "react";
 
 import ListOfFriends from "../../components/friends/ListOfFriends";
-import { Link, useLoaderData, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import Post from "../../components/Post";
 
@@ -14,18 +14,6 @@ import UnSignedHome from "../unsigned/HomePage";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux-store";
 import axiosInstance from "../../axios/instance";
-
-interface postDataProps {
-  id: number;
-  username: string;
-  title: string;
-  description: string;
-  contentType: "image" | "video";
-  contentSrc: string;
-  date: string;
-  likes: number;
-  comments: number;
-}
 
 export interface Person {
   id : number;
@@ -40,7 +28,10 @@ const SignedHome: React.FC = () => {
 
   
   const [activeView, setActiveView] = useSearchParams();
-  const [loader, setLoader] = useState([])
+  const [loader, setLoader] = useState({ 
+    articles : [],
+    posts: []
+  })
   const logged = useSelector<RootState>(state => state.auth.isAuth)
   const id : number = useSelector<RootState>(state => state.auth.userInfo?.id)
 
@@ -52,7 +43,18 @@ const SignedHome: React.FC = () => {
        },
        withCredentials : true
      }).then(({data}) => {
-      setLoader(data)
+      setLoader(prev => ({ 
+        ...prev,
+        posts: data
+      }))
+     })
+
+     axiosInstance.get("/articles")
+     .then(({ data }) => { 
+      setLoader(prev => ({ 
+        ...prev, 
+        articles : data
+      }))
      })
     }
   } , [id])
@@ -71,11 +73,11 @@ const SignedHome: React.FC = () => {
 
   return (
     <>
-      <div className="relative grid grid-cols-12 min-h-screen w-full">
+      <div className="relative grid w-full min-h-screen grid-cols-12">
 
-        <div className="w-full col-span-9 text-white p-8">
+        <div className="w-full col-span-9 p-8 text-white">
         
-          <div className="flex w-full overflow-x-scroll overflow-y-hidden justify-self-center gap-5 mt-8 p-5">
+          <div className="flex w-full gap-5 p-5 mt-8 overflow-x-scroll overflow-y-hidden justify-self-center">
             {stories.map((story, idx) => {
               let username = story.username;
               if (username.length > 9) {
@@ -85,8 +87,8 @@ const SignedHome: React.FC = () => {
               return (
                 <Link key={idx} to={`/stories/${idx + 1}`}>
                   <button key={idx} className="flex flex-col items-center">
-                    <div className="h-16 w-16 bg-gray-300 rounded-full"></div>
-                    <span className="text-sm mt-2">{username}</span>
+                    <div className="w-16 h-16 bg-gray-300 rounded-full"></div>
+                    <span className="mt-2 text-sm">{username}</span>
                   </button>
                 </Link>
               );
@@ -95,7 +97,7 @@ const SignedHome: React.FC = () => {
 
           
           <div className="mt-8">
-            <div className="flex space-x-4 border-b border-gray-200 pb-2 mb-4">
+            <div className="flex pb-2 mb-4 space-x-4 border-b border-gray-200">
               {POSSIBLE_SECTIONS.map((section, index) => (
                 <button
                   key={index}
@@ -115,16 +117,16 @@ const SignedHome: React.FC = () => {
         
             {(activeSection === "příspěvky" || activeSection === null) && (
               <div className="flex flex-col gap-5 justify-center px-60 pt-20 items-center min-w-[1000px]">
-                {loader && loader.map((post) => (
+                {loader && loader.posts.map((post) => (
                   <Post key={post.id} extended={false} post={post} />
                 ))}
               </div>
             )}
 
             {activeSection === "články" && (
-              <section className="w-full flex justify-center">
-                <div className="w-2/3 flex flex-col gap-5">
-                  {articles.map((article, index) => (
+              <section className="flex justify-center w-full">
+                <div className="flex flex-col w-2/3 gap-5">
+                  {loader && loader.articles.map((article, index) => (
                     <Article key={index} {...article} extended={false} />
                   ))}
                 </div>
@@ -134,7 +136,7 @@ const SignedHome: React.FC = () => {
         </div>
 
         
-        {id && <section className="col-span-3 rounded-xl overflow-y-scroll max-h-full w-full relative right-0 flex flex-col gap-5 p-10 scrollbar-disabled">
+        {id && <section className="relative right-0 flex flex-col w-full max-h-full col-span-3 gap-5 p-10 overflow-y-scroll rounded-xl scrollbar-disabled">
           <ListOfFriends user_id={id} />
         </section>}
       </div>

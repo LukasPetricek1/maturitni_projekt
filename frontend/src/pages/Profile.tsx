@@ -94,7 +94,7 @@ const Profile: React.FC = () => {
   } = useFetch({
     fetchFn: fetchUser,
     initialValue: [],
-    reCall: [ownerInfo , location.pathname],
+    reCall: ownerInfo!.id,
   });
 
 
@@ -128,8 +128,8 @@ const Profile: React.FC = () => {
 
   if (isFetching) {
     return (
-      <div className="relative w-full h-screen flex justify-center items-center flex-col">
-        <div className="animate-spin rounded-full aspect-square  w-20 border-t-4 border-purple-500 border-opacity-50"></div>
+      <div className="relative flex flex-col items-center justify-center w-full h-screen">
+        <div className="w-20 border-t-4 border-purple-500 border-opacity-50 rounded-full animate-spin aspect-square"></div>
         <p className="mt-2 text-gray-400">Načítám data...</p>
       </div>
     );
@@ -210,21 +210,21 @@ const Profile: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen w-full flex flex-col items-center justify-start">
+      <div className="flex flex-col items-center justify-start w-full min-h-screen">
         {visibleAboutMe && (
-          <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center backdrop-blur-sm bg-black/40 z-40">
+          <div className="fixed top-0 left-0 z-40 flex items-center justify-center w-screen h-screen backdrop-blur-sm bg-black/40">
             <div className="h-fit bg-white rounded-lg p-4 w-fit max-w-[40%] border border-gray-300 z-10 ">
-              <h2 className="text-purple-500 text-lg font-semibold mb-2">
+              <h2 className="mb-2 text-lg font-semibold text-purple-500">
                 O mně
               </h2>
-              <div className="text-blue-500 mb-5">
+              <div className="mb-5 text-blue-500">
                 <a href={user && user.website}>{user && user.website}</a>
               </div>
-              <p className="text-gray-700 text-sm">{user && user.bio}</p>
-              <section className="w-full flex justify-end">
+              <p className="text-sm text-gray-700">{user && user.bio}</p>
+              <section className="flex justify-end w-full">
                 <button
                   onClick={hideAboutMe}
-                  className="m-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-lg shadow-md hover:bg-gray-300 transition"
+                  className="px-4 py-2 m-2 text-gray-600 transition bg-gray-200 rounded-lg shadow-md hover:bg-gray-300"
                 >
                   Zavřít
                 </button>
@@ -241,7 +241,7 @@ const Profile: React.FC = () => {
                       data-tooltip-place="bottom"
                       data-tooltip-hidden={relations.isFriend}
                       disabled={!relations.isFriend}
-                      className="flex items-center gap-1 m-2 px-4 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-500 transition disabled:bg-gray-500 disabled:hover:scale-100"
+                      className="flex items-center gap-1 px-4 py-2 m-2 text-white transition bg-purple-600 rounded-lg shadow-md hover:bg-purple-500 disabled:bg-gray-500 disabled:hover:scale-100"
                     >
                       <SendIcon />
                       <p>Napsat</p>
@@ -263,7 +263,7 @@ const Profile: React.FC = () => {
         <ImageComponent For="theme-picture" user_id={user.id} src={user && user.theme_picture} disabled={!relations.isOwner}/>
           {relations.isOwner && (
             <button
-              className="absolute top-5 right-16 text-purple-500"
+              className="absolute text-purple-500 top-5 right-16"
               onClick={showSettings}
             >
               <FaEdit size={40} />
@@ -272,7 +272,7 @@ const Profile: React.FC = () => {
         </div>
 
         <div className="relative w-[50%] my-5 px-4 ">
-          <div className="w-full flex items-center justify-between">
+          <div className="flex items-center justify-between w-full">
             <div className="flex items-center">
               <div>
                 <ImageComponent For="profile-picture" user_id={user.id} src={user && user.profile_picture} disabled={!relations.isOwner} />
@@ -285,10 +285,10 @@ const Profile: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex gap-10 w-full">
+            <div className="flex w-full gap-10">
               <button
                 onClick={showAboutMe}
-                className="ml-auto text-purple-500 border border-purple-500 py-3 px-5 rounded-md hover:bg-purple-500 hover:text-white transition"
+                className="px-5 py-3 ml-auto text-purple-500 transition border border-purple-500 rounded-md hover:bg-purple-500 hover:text-white"
               >
                 O mně
               </button>
@@ -297,7 +297,7 @@ const Profile: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={friendAction}
-                      className=" ml-auto bg-purple-700 text-white py-3 px-5 rounded-md hover:bg-purple-500 transition"
+                      className="px-5 py-3 ml-auto text-white transition bg-purple-700 rounded-md  hover:bg-purple-500"
                     >
                       {!relations.isFriend ? (
                         <p className="flex items-center gap-2">
@@ -330,7 +330,7 @@ const Profile: React.FC = () => {
           <Outlet context={{ user_id: user.id }} />
         ) : (
           <>
-            <div className="w-full max-w-screen-sm mt-8 px-4">
+            <div className="w-full max-w-screen-sm px-4 mt-8">
               <h3 className="text-lg font-bold text-white">Zájmy</h3>
 
               <div className="flex flex-wrap gap-2 mt-4">
@@ -339,25 +339,25 @@ const Profile: React.FC = () => {
                     <Link
                       to={`/discover/users?selected_hobbies=${interest}`}
                       key={index}
-                      className="bg-purple-500 text-white px-4 py-2 rounded-full text-sm shadow-md hover:bg-purple-600 cursor-pointer"
+                      className="px-4 py-2 text-sm text-white bg-purple-500 rounded-full shadow-md cursor-pointer hover:bg-purple-600"
                     >
                       {interest}
                     </Link>
                   ))
                 ) : (
-                  <p className="text-gray-500 pl-10">
+                  <p className="pl-10 text-gray-500">
                     Uživatel nezveřejnil žádné zájmy.
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="w-full max-w-screen-sm mt-6 px-4">
+            <div className="w-full max-w-screen-sm px-4 mt-6">
               <SavedStories isOwner={relations.isOwner} />
             </div>
 
             {user.id && (
-              <div className="mt-5 w-1/2 flex flex-col items-center">
+              <div className="flex flex-col items-center w-1/2 mt-5">
                 <SubNavigation
                   userId={user.id}
                   username={account_id!}
@@ -383,7 +383,7 @@ const SavedStories: React.FC<{ isOwner: boolean }> = ({ isOwner }) => {
     <>
       <h3 className="text-lg font-bold text-white">Uložené příběhy</h3>
 
-      <div className="flex gap-4 items-center p-5">
+      <div className="flex items-center gap-4 p-5">
         {savedStories.map((storyId) => {
           const { id, url } = stories[storyId - 1];
 
@@ -392,7 +392,7 @@ const SavedStories: React.FC<{ isOwner: boolean }> = ({ isOwner }) => {
               <div className="flex flex-col items-center">
                 <div
                   style={{ backgroundImage: `url(${url})` }}
-                  className="h-16 w-16 rounded-full bg-cover bg-center"
+                  className="w-16 h-16 bg-center bg-cover rounded-full"
                 ></div>
                 <p className="mt-2 text-sm text-white">Nazev</p>
               </div>
@@ -403,7 +403,7 @@ const SavedStories: React.FC<{ isOwner: boolean }> = ({ isOwner }) => {
         {isOwner && (
           <button onClick={() => saveAnotherStory()}>
             <div className="flex flex-col items-center">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gray-300">
+              <div className="flex items-center justify-center w-16 h-16 bg-gray-300 rounded-full">
                 <CreateIcon />
               </div>
               <p className="mt-2 text-sm text-white">Nové</p>
@@ -453,7 +453,7 @@ const SubNavigation: React.FC<{
 
   return (
     <>
-      <div className="w-full flex justify-center gap-8 border-b p-2 border-gray-500">
+      <div className="flex justify-center w-full gap-8 p-2 border-b border-gray-500">
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -482,7 +482,7 @@ const SubNavigation: React.FC<{
               {(() => {
                 if (!posts.length)
                   return (
-                    <p className="text-gray-500 text-2xl text-nowrap">
+                    <p className="text-2xl text-gray-500 text-nowrap">
                       {!isOwner ? (
                         <>
                           <b>{username}</b> zatím nepřidal/a žádné příspěvky.{" "}
@@ -507,7 +507,7 @@ const SubNavigation: React.FC<{
                 if (!userArticles.length)
                   return (
                     <>
-                      <p className="text-gray-500 text-2xl text-nowrap">
+                      <p className="text-2xl text-gray-500 text-nowrap">
                         {!isOwner ? (
                           <>
                             <b>{username}</b> zatím nepublikoval/a žádné články.
