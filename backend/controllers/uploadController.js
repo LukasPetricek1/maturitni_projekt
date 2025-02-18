@@ -29,6 +29,10 @@ exports.uploadImage = async function(req, res){
       console.log("Post")
       return res.json({ fileURL, extension })
     }
+    else if(type === "article"){ 
+      console.log("article")
+      return res.json({ fileURL , extension})
+    }
     else if(type === "profile-picture"){ 
       console.log("Profile-picture")
       console.log(req.file)

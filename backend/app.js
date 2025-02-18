@@ -52,6 +52,7 @@ app.use("/users" , require("./routes/users"))
 app.use("/channels" , require("./routes/channels"))
 app.use("/hobbies" , require("./routes/hobbyRoutes"))
 app.use("/friends" , require("./routes/friends"))
+app.use("/articles" , require("./routes/articleRoutes"))
 
 // propojeni mySQL
 connectDB()

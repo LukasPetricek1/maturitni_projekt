@@ -1,4 +1,24 @@
-const {getAllPostsFunction , getUserPosts , createPost, getPost } = require("../mysql/functions/posts")
+const {getAllPostsFunction , getUserPosts , createPost, getPost, likePostFunction ,unlikePostFunction , checkExistingPostLikeFunction } = require("../mysql/functions/posts")
+
+exports.togglePostLike = async function(req, res){ 
+  const { post_id } = req.params;
+  const { user_id } = req.query;
+
+  try{ 
+    const [existingLike] = await checkExistingPostLikeFunction(post_id, user_id)
+
+    if(existingLike){ 
+      await unlikePostFunction(post_id, user_id)
+      return res.send("unlike")
+    }else{ 
+      await likePostFunction(post_id, user_id)
+      return res.send("like")
+    }
+  }catch(err){ 
+    console.log(err)
+    res.status(409).send(err)
+  }
+}
 
 exports.getAllPosts = function(req, res){ 
   const { user_id } = req.query;
@@ -25,8 +45,9 @@ exports.getUserPosts = function(req, res){
 
 exports.getPost = async function(req, res){ 
   const { post_id } = req.params;
+  const { user_id } = req.query;
 
-  getPost(post_id)
+  getPost(post_id, user_id)
   .then(data => {
     res.status(201).json(data)
   })

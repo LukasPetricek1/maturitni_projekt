@@ -1,13 +1,52 @@
-const { getAllPostsQuery , getUserPostsQuery , CREATE_POST_QUERY , GET_POST} = require("../queries/post")
+const { getAllPostsQuery , getUserPostsQuery , CREATE_POST_QUERY , GET_POST, LIKE_POST, UNLIKE_POST , CHECK_EXISTING_POST_LIKE} = require("../queries/post")
 
 const mysql = require("mysql2")
 const config = require("../db/config")
 
 const pool = mysql.createPool(config)
 
-const getPost = (id) => { 
+
+const checkExistingPostLikeFunction = (post_id, user_id) => { 
   return new Promise((resolve, reject) => { 
-    pool.query(GET_POST(id) , (err, results) => { 
+    pool.query(CHECK_EXISTING_POST_LIKE(post_id, user_id) , (err, results) => { 
+      if(err){ 
+        reject(err)
+      }else{ 
+        resolve(results)
+      }
+    })
+  })
+}
+
+
+const unlikePostFunction = (post_id, user_id) => { 
+  return new Promise((resolve, reject) => { 
+    pool.query(UNLIKE_POST(post_id, user_id) , (err, results) => { 
+      if(err){ 
+        reject(err)
+      }else{ 
+        resolve(results)
+      }
+    })
+  })
+}
+
+
+const likePostFunction = (post_id, user_id) => { 
+  return new Promise((resolve, reject) => { 
+    pool.query(LIKE_POST(post_id, user_id) , (err, results) => { 
+      if(err){ 
+        reject(err)
+      }else{ 
+        resolve(results)
+      }
+    })
+  })
+}
+
+const getPost = (post_id, user_id) => { 
+  return new Promise((resolve, reject) => { 
+    pool.query(GET_POST(post_id, user_id) , (err, results) => { 
       if(err){ 
         reject(err)
       }else{ 
@@ -57,5 +96,8 @@ module.exports = {
   getAllPostsFunction,
   getUserPosts,
   createPost,
-  getPost
+  getPost,
+  likePostFunction,
+  unlikePostFunction,
+  checkExistingPostLikeFunction
 }
