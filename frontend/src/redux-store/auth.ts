@@ -38,6 +38,12 @@ export interface authProps {
     profile_picture: string;
     username: string;
   }[];
+  channels? : {
+    id: number;
+    name: string;
+    organization_id? : number;
+    profile_picture?: string;
+  }[]
 }
 
 export interface chatProps {
@@ -130,6 +136,10 @@ const authSlice = createSlice({
       if( state.credentials){
         state.credentials.email = action.payload
       }
+    },
+
+    loadChannels : (state, action : PayloadAction<authProps["channels"]>) => { 
+      state.channels = [...(state.channels) ?? [], ...action.payload!]
     }
   },
 });
@@ -146,6 +156,7 @@ export const {
   updateProfilePicture,
   updateThemePicture,
   updateHobbies,
-  changeEmail
+  changeEmail,
+  loadChannels
 } = authSlice.actions;
 export default authSlice.reducer;

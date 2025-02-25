@@ -29,6 +29,26 @@ io.on("connection" , socket => {
   socket.on("post_unlike" , data => { 
     io.emit("post_unlike" , data)
   })
+
+  socket.on("direct-chat/join-channel" , channel_id => { 
+    socket.join(channel_id)
+  })
+
+  socket.on("direct-chat/leave-channel" , channel_id => { 
+    socket.leave(channel_id)
+  })
+
+  socket.on("direct-chat/new-message" , ({ channel , msg}) => { 
+    io.to(channel).emit("direct-chat/new-message" , msg)
+  })
+
+  socket.on("direct-chat/typing" , data => { 
+    io.to(data.channel_id).emit("direct-chat/typing" , data.username)
+  })
+
+  socket.on("direct-chat/stop-typing" , data => { 
+    io.to(data.channel_id).emit("direct-chat/stop-typing" , data.username)
+  })
 })
 
 const PORT = process.env.PORT;

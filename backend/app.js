@@ -53,6 +53,7 @@ app.use("/channels" , require("./routes/channels"))
 app.use("/hobbies" , require("./routes/hobbyRoutes"))
 app.use("/friends" , require("./routes/friends"))
 app.use("/articles" , require("./routes/articleRoutes"))
+app.use("/direct-chat" , require("./routes/directChatRoutes"))
 
 // propojeni mySQL
 connectDB()

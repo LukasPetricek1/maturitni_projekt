@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import MainNavBar from "../../components/MainNavBar";
 import Aside from "../../components/Aside";
 import { useDispatch } from "react-redux";
-import { loadFriends, loadInvites, login } from "../../redux-store/auth";
+import { loadChannels, loadFriends, loadInvites, login } from "../../redux-store/auth";
 import axiosInstance from "../../axios/instance";
 import { userProps } from "../Profile";
 import { socket } from "../../main";
@@ -76,6 +76,24 @@ const SignedRoot: React.FC = () => {
         }
       });
   }, []);
+
+  useLayoutEffect(() => { 
+      if(userInfo.id){ 
+        async function getUserchannels(){ 
+          const response = await axiosInstance.get("/direct-chat/channels?user_id="+userInfo.id)
+          const { data : user_channels } = response;
+          for(const channel of user_channels){ 
+            if(channel.name.includes("@")){ 
+              const friend_name = channel.name.slice(1,channel.name.length).split("-").filter((username : string) => username !== userInfo.username)[0]
+              channel.name = friend_name;
+            }
+          }
+          dispatch(loadChannels(user_channels))
+        }
+  
+        getUserchannels()
+      }
+    } , [dispatch, userInfo.id, userInfo.username])
 
   const chat = location.pathname.includes("chat");
 
