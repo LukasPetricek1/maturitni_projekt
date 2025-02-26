@@ -9,6 +9,9 @@ import {
 
 import { TbSend2 as DirectMessage } from "react-icons/tb";
 import { IoMdAdd as AddIcon } from "react-icons/io";
+import { IoIosSearch as SearchIcon } from "react-icons/io";
+
+
 
 
 import { NavLink } from "react-router-dom";
@@ -40,6 +43,16 @@ const IndexChat: React.FC = () => {
         <section className="flex flex-col gap-3">
           {/* Organizations here */}
         </section>
+
+
+        <NavLink
+          className={({ isActive }) => isActive ? "text-purple-500": "text-white"}
+          to="/chat/org"
+        >
+          <button className="flex justify-center items-center">
+            <SearchIcon  className="text-2xl mb-6 cursor-pointer" />
+          </button>
+        </NavLink>
 
         <NavLink
           className={({ isActive }) => isActive ? "text-purple-500": "text-white"}

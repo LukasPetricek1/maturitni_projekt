@@ -7,8 +7,7 @@ import { useDispatch } from "react-redux";
 import { loadChannels, loadFriends, loadInvites, login } from "../../redux-store/auth";
 import axiosInstance from "../../axios/instance";
 import { userProps } from "../Profile";
-import { socket } from "../../main";
-
+import { useSocket } from "../../Context/SocketContext";
 const SignedRoot: React.FC = () => {
   const location = useLocation();
   const [userInfo, setUserInfo] = useState<userProps>({
@@ -25,9 +24,11 @@ const SignedRoot: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { socket } = useSocket()
 
   useLayoutEffect(() => {
-    axiosInstance
+    if(socket){
+      axiosInstance
       .get("/verify")
       .then(async (response) => {
         if (response.data.error === "email_unverified") {
@@ -44,7 +45,7 @@ const SignedRoot: React.FC = () => {
               userInfo: { id, website, bio, hobbies , profile_picture , theme_picture },
             })
           );
-          socket.emit("register", username);
+          socket?.emit("register", id);
 
           await axiosInstance
             .get(`users/${id}/friends`)
@@ -75,7 +76,19 @@ const SignedRoot: React.FC = () => {
           }
         }
       });
-  }, []);
+
+      socket.on("friendship/send" , async data => { 
+        const { user_id } = data;
+        await axiosInstance
+            .get("/friends/invitations?user_id=" + user_id)
+            .then(({ data }) => {
+              dispatch(loadInvites(data));
+            })
+            .catch((err) => console.log(err));
+      })
+
+    }
+  }, [socket]);
 
   useLayoutEffect(() => { 
       if(userInfo.id){ 
