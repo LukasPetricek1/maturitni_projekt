@@ -348,8 +348,9 @@ const AccountSettings: React.FC<AccountSettings> = ({
                 value={userData.bio}
                 name="bio"
                 onChange={handleChange}
-                maxLength={250}
+                maxLength={200}
               ></textarea>
+              <div className="text-right text-sm mt-1">{`${userData.bio.length}/${200}`}</div>
             </div>
             <AddHobbies hobbies={hobbies} setHobbies={setHobbies} />
             <div className="flex gap-8">

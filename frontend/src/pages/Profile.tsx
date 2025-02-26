@@ -30,6 +30,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import FriendOptions from "../components/friends/FriendOptions";
 import ImageComponent from "../components/ImageComponent";
+import { socket } from "../main";
 
 export interface userProps {
   email: string;
@@ -160,12 +161,14 @@ const Profile: React.FC = () => {
             user_id_2: user.id,
           })
           .then(({ data }) => {
+            console.log(data)
             if (data.sqlState) {
-              if (data.sqlState === "10000") {
+              if (data.sqlState === "45000") {
                 setToastInfo("Pozvánka již byla odeslána.", "warning");
               }
             } else {
-              setToastInfo("Pozvánka úapěšně odeslána.", "success");
+              socket.emit("friendship/send" , { user_id : user.id})
+              setToastInfo("Pozvánka úspěšně odeslána.", "success");
             }
           })
           .catch(() => {

@@ -27,13 +27,13 @@ import CreateArticle from "./pages/CreateArticle.tsx";
 import Signup from "./pages/SignUp.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
 import Verify from "./pages/Verify.tsx";
-import { postPageLoader } from "./loaders/PostPageLoader.tsx";
 import Toast from "./components/Toast.tsx";
 
-import { AppContext, AppContextProps } from "./Context/AppContext.tsx";
+import { AppContext } from "./Context/AppContext.tsx";
 import CreateOrganization from "./pages/chat/CreateOrganization.tsx";
 import { onLike } from "./utils/functions/onLike.ts";
 import { SocketProvider } from "./Context/SocketContext.tsx";
+import Organizations from "./pages/chat/Organizations.tsx";
 
 const signedRouter = createBrowserRouter([
   {
@@ -80,15 +80,24 @@ const signedRouter = createBrowserRouter([
             element: <CreateOrganization />,
           },
           {
-            path: ":org_id",
-            element: <Menu variant="org" />,
-            children: [
-              {
-                path: ":channel_id",
-                element: <OrgChat />,
-              },
-            ],
+            path: "org",
+            element : <Organizations />
           },
+        {
+          path : "org",
+          children : [
+            {
+              path: ":org_id",
+              element: <Menu variant="org" />,
+              children: [
+                {
+                  path: ":channel_id",
+                  element: <OrgChat />,
+                },
+              ],
+            },
+          ]
+        }
         ],
       },
       {

@@ -13,6 +13,7 @@ import { RootState } from "../../redux-store";
 import axiosInstance from "../../axios/instance";
 import { useNavigate } from "react-router-dom";
 import { clearInvite } from "../../redux-store/auth";
+import { useSocket } from "../../Context/SocketContext";
 
 interface InvitationProps {
   created_at: string;
@@ -37,6 +38,7 @@ const Invitation: React.FC<InvitationProps> = ({
   const dispatch = useDispatch();
   const userId = useSelector<RootState>((state) => state.auth.userInfo?.id);
   const { setToastInfo } = useContext(AppContext);
+  const { socket } = useSocket()
 
   const onAccept = () => {
     if (userId) {

@@ -74,7 +74,7 @@ const UPDATE_USER_INFO = (user_id, username, name, web, email, bio) => {
             name = '${name}',
             website = '${web}',
             email = '${email}',
-            bio = '${bio}',
+            bio = "${bio}",
             verified = 'no'
             WHERE id = ${user_id};
             
@@ -85,7 +85,7 @@ const UPDATE_USER_INFO = (user_id, username, name, web, email, bio) => {
             SET username = '${username}',
             name = '${name}',
             website = '${web}',
-            bio = '${bio}'
+            bio = "${bio}"
             WHERE id = ${user_id}`
   }
 }

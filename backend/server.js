@@ -18,8 +18,9 @@ const io = new Server(server, {
 io.on("connection" , socket => {
   console.log(`User connected with id ${socket.id}`)
 
-  socket.on("register" , username => { 
-    console.log(username)
+  socket.on("register" , user_id => { 
+    console.log(user_id)
+    socket.join(user_id)
   })
 
   socket.on("post_like" ,data => { 
@@ -48,6 +49,11 @@ io.on("connection" , socket => {
 
   socket.on("direct-chat/stop-typing" , data => { 
     io.to(data.channel_id).emit("direct-chat/stop-typing" , data.username)
+  })
+
+  socket.on("friendship/send" , data => { 
+    console.log(data)
+    io.to(data.user_id).emit("friendship/send" , data)
   })
 })
 
