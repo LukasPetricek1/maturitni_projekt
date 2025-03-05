@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import {
-  Link,
   Outlet,
   useNavigate,
   useLocation,
@@ -30,13 +29,13 @@ const IndexChat: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <aside className="w-20 bg-purple-950/20  flex flex-col items-center py-4">
+      <aside className="flex flex-col items-center w-20 py-4 bg-purple-950/20">
         <NavLink
           className={({ isActive }) => isActive ? "text-purple-500": "text-white"}
           to="/chat/@me"
         >
-          <button className="flex justify-center items-center">
-            <DirectMessage className="text-2xl mb-6 cursor-pointer" />
+          <button className="flex items-center justify-center">
+            <DirectMessage className="mb-6 text-2xl cursor-pointer" />
           </button>
         </NavLink>
 
@@ -49,8 +48,8 @@ const IndexChat: React.FC = () => {
           className={({ isActive }) => isActive ? "text-purple-500": "text-white"}
           to="/chat/org"
         >
-          <button className="flex justify-center items-center">
-            <SearchIcon  className="text-2xl mb-6 cursor-pointer" />
+          <button className="flex items-center justify-center">
+            <SearchIcon  className="mb-6 text-2xl cursor-pointer" />
           </button>
         </NavLink>
 
@@ -58,8 +57,8 @@ const IndexChat: React.FC = () => {
           className={({ isActive }) => isActive ? "text-purple-500": "text-white"}
           to="/chat/create_organization"
         >
-          <button className="flex justify-center items-center">
-            <AddIcon className="text-2xl mb-6 cursor-pointer" />
+          <button className="flex items-center justify-center">
+            <AddIcon className="mb-6 text-2xl cursor-pointer" />
           </button>
         </NavLink>
       </aside>

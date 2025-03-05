@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 interface UseFetchProps<T> {
-  fetchFn: () => Promise<T>; // Funkce vrací Promise<T>
-  initialValue: T; // Počáteční hodnota odpovídá typu T
-  reCall: number | null
+  fetchFn: () => Promise<T>; 
+  initialValue: T; 
+  reCall: []
 }
 
 export function useFetch<T>({ fetchFn, initialValue , reCall }: UseFetchProps<T>) {
@@ -28,7 +28,7 @@ export function useFetch<T>({ fetchFn, initialValue , reCall }: UseFetchProps<T>
 
       fetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reCall]);
+  }, [...reCall]);
 
   return {
     isFetching,

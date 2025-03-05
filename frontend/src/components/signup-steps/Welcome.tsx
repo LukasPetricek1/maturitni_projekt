@@ -26,13 +26,13 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ user }) => {
   } , [auth.credentials, auth.userInfo])
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-2xl font-bold text-white mb-2">
+    <div className="flex flex-col items-center justify-center w-screen h-screen">
+      <h1 className="mb-2 text-2xl font-bold text-white">
         Úspěšně jste se zaregistrovali uživateli <span className="text-purple-500">{user.name}</span>
       </h1>
-      <h2 className="text-lg font-medium text-gray-300 mb-6">( {user.username} )</h2>
+      <h2 className="mb-6 text-lg font-medium text-gray-300">( {user.username} )</h2>
       <Link to="/login">
-        <button className="bg-purple-500 text-white font-medium text-4xl py-2 px-6 rounded-lg hover:bg-purple-800 transition duration-300">
+        <button className="px-6 py-2 text-4xl font-medium text-white transition duration-300 bg-purple-500 rounded-lg hover:bg-purple-800">
           Přihlásit se
         </button>
       </Link>

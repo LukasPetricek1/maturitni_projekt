@@ -87,6 +87,19 @@ const SignedRoot: React.FC = () => {
             .catch((err) => console.log(err));
       })
 
+      socket.on("friendship/accepted" , async data => { 
+        console.log("Aaccepted: " ,data)
+        await axiosInstance
+            .get(`users/${data.user_id}/friends`)
+            .then((response) => {
+              if (response.data) {
+                const data = response.data;
+                dispatch(loadFriends(data))
+              }
+            })
+            .catch((err) => console.log(err));
+      })
+
     }
   }, [socket]);
 

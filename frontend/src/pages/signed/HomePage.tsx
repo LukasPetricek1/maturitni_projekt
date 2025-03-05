@@ -6,7 +6,6 @@ import { Link, useSearchParams } from "react-router-dom";
 import Post from "../../components/Post";
 
 import { stories } from "../../data/stories";
-// import { postsData } from "../../data/posts";
 import { articles } from "../../data/articles";
 
 import Article from "../../components/Article";

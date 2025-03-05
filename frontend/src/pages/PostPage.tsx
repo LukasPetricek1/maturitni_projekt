@@ -31,7 +31,7 @@ const PostPage: React.FC = () => {
   const { data } = useFetch({
     fetchFn: fetch_post,
     initialValue: [],
-    reCall: userId,
+    reCall: [userId],
   });
 
   useEffect(() => {

@@ -50,6 +50,8 @@ const Invitation: React.FC<InvitationProps> = ({
               `Od teď jste s uživatelem ${sender_name} přátelé.`,
               "success"
             );
+            console.log("accepting" , { user_id : sender_id})
+            socket!.emit("friendship/accepted" , { user_id : sender_id })
             navigate("/profile/" + sender_username);
             dispatch(clearInvite(id));
           } else {
@@ -84,11 +86,11 @@ const Invitation: React.FC<InvitationProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-4 p-4 shadow-md border border-gray-200 rounded-lg bg-white my-2">
+    <div className="flex items-center gap-4 p-4 my-2 bg-white border border-gray-200 rounded-lg shadow-md">
       <img
         src={sender_profile_picture || LogoImage}
         alt={sender_name}
-        className="w-12 h-12 rounded-full border border-gray-300 object-cover"
+        className="object-cover w-12 h-12 border border-gray-300 rounded-full"
       />
 
       <div className="flex-1">

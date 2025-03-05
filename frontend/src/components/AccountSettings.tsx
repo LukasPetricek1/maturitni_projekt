@@ -210,9 +210,9 @@ const AccountSettings: React.FC<AccountSettings> = ({
     <>
       <input hidden type="file" accept="image/*" ref={imageInput} />
 
-      <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
         <div className="bg-white rounded-xl shadow-lg max-h-[95%] w-11/12 max-w-2xl p-6 overflow-y-scroll">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Upravit Profil</h2>
             <button
               onClick={onClose}
@@ -222,21 +222,9 @@ const AccountSettings: React.FC<AccountSettings> = ({
             </button>
           </div>
           <div className="mt-4 space-y-4">
-            {/* Obrazky, jdou opravit na profilove strance, mozna i tady budou */}
-            {/* <div className="flex justify-between items-center">
-              <label className="font-medium">Profilový Obrázek</label>
-            </div>
-            
-            <ImageComponent src={profilePicture} For="profile-picture" user_id={userData.id} />
 
-            <div className="flex justify-between items-center mt-4">
-              <label className="font-medium">Úvodní Fotka</label>
-            </div>
-
-            <ImageComponent src={themePicture} For="theme-picture" user_id={userData.id} /> */}
-
-            <section className="flex gap-4 w-full">
-              <div className="mt-4 w-full">
+            <section className="flex w-full gap-4">
+              <div className="w-full mt-4">
                 <InputCheck
                   type="text"
                   id="username"
@@ -261,7 +249,7 @@ const AccountSettings: React.FC<AccountSettings> = ({
                   }
                 />
               </div>
-              <div className="mt-4 w-full">
+              <div className="w-full mt-4">
                 <InputCheck
                   type="text"
                   id="name"
@@ -343,26 +331,26 @@ const AccountSettings: React.FC<AccountSettings> = ({
               <label className="font-medium">BIO</label>
               <textarea
                 rows={3}
-                className="mt-1 w-full border rounded-lg px-4 py-2 border-purple-500"
+                className="w-full px-4 py-2 mt-1 border border-purple-500 rounded-lg"
                 placeholder="Popiš se..."
                 value={userData.bio}
                 name="bio"
                 onChange={handleChange}
                 maxLength={200}
               ></textarea>
-              <div className="text-right text-sm mt-1">{`${userData.bio.length}/${200}`}</div>
+              <div className="mt-1 text-sm text-right">{`${userData.bio.length}/${200}`}</div>
             </div>
             <AddHobbies hobbies={hobbies} setHobbies={setHobbies} />
             <div className="flex gap-8">
               <button
                 type="button"
                 onClick={resetData}
-                className="mt-6 w-full text-lg font-black text-purple-500 border border-purple-500 rounded-lg py-2"
+                className="w-full py-2 mt-6 text-lg font-black text-purple-500 border border-purple-500 rounded-lg"
               >
                 Resetovat
               </button>
               <button
-                className="mt-6 w-full bg-purple-500 text-white rounded-lg py-2 hover:bg-purple-600"
+                className="w-full py-2 mt-6 text-white bg-purple-500 rounded-lg hover:bg-purple-600"
                 onClick={send}
               >
                 Odeslat

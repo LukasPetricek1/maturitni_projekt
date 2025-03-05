@@ -29,14 +29,14 @@ const HobbiesMenu: React.FC<HobbiesMenuProps> = ({
   return hobbiesData.map(([hobby, count]) => (
     <div
       key={hobby}
-      className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center"
+      className="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
       onClick={() => {
         addHobby(hobby);
         action("");
       }}
     >
       <span>{hobby}</span>
-      <span className="text-gray-500 text-sm">{count}</span>
+      <span className="text-sm text-gray-500">{count}</span>
     </div>
   ));
 };
@@ -81,12 +81,12 @@ const HobbyInput: React.FC<HobbyInputProps> = ({
   });
 
   return (
-    <div className="relative w-96 mx-auto mt-10">
+    <div className="relative mx-auto mt-10 w-96">
       <div className="flex flex-wrap gap-2 mb-2">
         {selectedHobbies.map((hobby) => (
           <div
             key={hobby}
-            className="px-3 py-1 bg-purple-500 text-white rounded-full cursor-pointer"
+            className="px-3 py-1 text-white bg-purple-500 rounded-full cursor-pointer"
             onClick={() => removeHobby(hobby)}
           >
             {hobby}
@@ -107,7 +107,7 @@ const HobbyInput: React.FC<HobbyInputProps> = ({
         onBlur={() => setTimeout(() => setIsFocused(false), 200)}
       />
       {isFocused && (
-        <div className="absolute w-full bg-white border border-gray-300 rounded-md mt-2 shadow-lg max-h-48 overflow-auto">
+        <div className="absolute w-full mt-2 overflow-auto bg-white border border-gray-300 rounded-md shadow-lg max-h-48">
           <HobbiesMenu
             hobbiesData={
               currentHobbies.length
@@ -123,7 +123,6 @@ const HobbyInput: React.FC<HobbyInputProps> = ({
   );
 };
 
-// -----------------------------------------------------------------
 const DiscoverUsers: React.FC = () => {
   const [selectedHobbiesParams, setSelectedHobbiesParams] = useSearchParams();
   const selected_hobbies = selectedHobbiesParams.get("selected_hobbies");
@@ -135,12 +134,6 @@ const DiscoverUsers: React.FC = () => {
 
   const [hobbies, setHobbies] = useState([]);
   const [users, setUsers] = useState([]);
-
-  // users.map(function (user: User) {
-  //   selectedHobbies.map((hobby) => {
-  //     if (user.hobbies?.includes(hobby) && !filteredUsers.includes(user)) filteredUsers.push(user);
-  //   });
-  // });
 
   useEffect(() => {
     if (userId) {
@@ -165,9 +158,6 @@ const DiscoverUsers: React.FC = () => {
         .then(({ data }) => {
           console.log(data);
           setHobbies(data.map((hobby) => hobby.name));
-          // const hobbies = data.reduce((a,b) => a.hobbies.split(",").concat(b.hobbies.split(",")))
-          // setHobbies(hobbies)
-          // setUsers(data)
         })
         .catch((error) => console.log(error));
     }
@@ -207,8 +197,8 @@ const DiscoverUsers: React.FC = () => {
   };
 
   return (
-    <div className="w-full  mx-auto p-4">
-      <h1 className="text-2xl text-purple-500 font-bold text-center mb-6">
+    <div className="w-full p-4 mx-auto">
+      <h1 className="mb-6 text-2xl font-bold text-center text-purple-500">
         Objevte nové přátele
       </h1>
 
@@ -225,7 +215,7 @@ const DiscoverUsers: React.FC = () => {
       </div>
 
       {users.length > 0 ? (
-        <section className="w-full grid grid-cols-4 gap-5 px-10">
+        <section className="grid w-full grid-cols-4 gap-5 px-10">
           <ListOfFriends customFriendsList={users} />
         </section>
       ) : (

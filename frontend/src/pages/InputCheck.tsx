@@ -127,12 +127,7 @@ const InputCheck: React.FC<Props> = ({
       <>
         {ERROR && (
           <div className="mt-4 mb-4">
-            <ul className="list-inside text-red-700">
-              {/* <li className={rules.noSpace ? "text-green-500" : "text-red-700"}>Nesmí obsahovat mezezery</li>
-          <li className={rules.length <= 30 ? "text-green-500" : "text-red-700"}>Kratší než 30 znaků</li>
-          <li className={rules.letters >= 6 ? "text-green-500" : "text-red-700"}>Mít alespoň 6 písmen</li>
-          <li className={rules.digits >= 2 ? "text-green-500" : "text-red-700"}>Obsahovat alespoň 2 číslice</li>
-          <li className={rules.specialSymbols >= 1 ? "text-green-500" : "text-red-700"}>Obsahovat alespoň 1 následující znak (@,#,$,%,&,)</li> */}
+            <ul className="text-red-700 list-inside">
               <li>{ERROR}</li>
             </ul>
           </div>

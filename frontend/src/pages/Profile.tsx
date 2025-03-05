@@ -95,7 +95,7 @@ const Profile: React.FC = () => {
   } = useFetch({
     fetchFn: fetchUser,
     initialValue: [],
-    reCall: ownerInfo!.id,
+    reCall: [ownerInfo, location.pathname],
   });
 
 
@@ -300,7 +300,7 @@ const Profile: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={friendAction}
-                      className="px-5 py-3 ml-auto text-white transition bg-purple-700 rounded-md  hover:bg-purple-500"
+                      className="px-5 py-3 ml-auto text-white transition bg-purple-700 rounded-md hover:bg-purple-500"
                     >
                       {!relations.isFriend ? (
                         <p className="flex items-center gap-2">

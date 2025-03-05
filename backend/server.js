@@ -55,6 +55,11 @@ io.on("connection" , socket => {
     console.log(data)
     io.to(data.user_id).emit("friendship/send" , data)
   })
+
+  socket.on("friendship/accepted" , data => { 
+    console.log("friendship accepted")
+    io.emit("friendship/accepted" , data)
+  })
 })
 
 const PORT = process.env.PORT;

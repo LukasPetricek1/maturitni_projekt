@@ -21,36 +21,29 @@ const MainNavBar: React.FC = () => {
   return (
     <nav
       style={{ gridColumn: "span 24" }}
-      className="sticky top-0 w-full bg-black/70 backdrop-blur-md shadow-2xl z-50"
+      className="sticky top-0 z-50 w-full shadow-2xl bg-black/70 backdrop-blur-md"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <div className="flex items-center justify-between h-16 px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <Logo title />
 
         {!auth && (
           <div className="flex items-center space-x-4">
             <Link
               to="/login"
-              className="text-purple-500 hover:text-purple-600 transition duration-200"
+              className="text-purple-500 transition duration-200 hover:text-purple-600"
             >
               Přihlásit se
             </Link>
             <Link
               to="/signup"
-              className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition duration-200"
+              className="px-4 py-2 text-white transition duration-200 bg-purple-500 rounded-lg hover:bg-purple-600"
             >
               Registrace
             </Link>
           </div>
         )}
 
-        { auth && <AccountButton />
-          /* <button
-            className="relative w-10 h-10 flex items-center justify-center "
-            aria-label="Uživatelský účet"
-          >
-            <AccountPlaceholder className="text-white" size={40} />
-          </button> */
-        }
+        { auth && <AccountButton />}
       </div>
     </nav>
   );

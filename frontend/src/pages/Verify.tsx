@@ -81,39 +81,36 @@ const VerifyAccount = () => {
             onClose={closeToast}
           />
         )}
-        <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-gray-600 px-4">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md text-center">
+        <div className="flex flex-col items-center justify-center w-screen min-h-screen px-4 bg-gray-600">
+          <div className="w-full max-w-md p-6 text-center bg-white shadow-lg rounded-2xl">
             <h2 className="text-2xl font-bold text-purple-500">Ověření účtu</h2>
-            <p className="text-gray-600 mt-2">
+            <p className="mt-2 text-gray-600">
               Odeslali jsme ověřovací kód na váš e-mail:{" "}
               <span className="text-purple-500">{email}</span>. Zadejte jej
               níže.
             </p>
 
-            {/* Input pro zadání kódu */}
             <input
               type="text"
               maxLength={6}
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Zadejte kód"
-              className="mt-4 w-full border border-gray-300 rounded-lg px-4 py-2 text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-2 mt-4 text-lg tracking-widest text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
 
-            {/* Tlačítko pro ověření účtu */}
             <button
               onClick={handleVerify}
-              className="mt-4 w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 rounded-lg transition"
+              className="w-full py-2 mt-4 font-semibold text-white transition bg-purple-500 rounded-lg hover:bg-purple-600"
             >
               Ověřit účet
             </button>
 
-            {/* Možnost odeslání kódu znovu */}
-            <p className="text-gray-500 text-sm mt-4">
+            <p className="mt-4 text-sm text-gray-500">
               Nepřišel vám kód?{" "}
               <button
                 onClick={handleResend}
-                className="text-purple-500 font-semibold hover:underline"
+                className="font-semibold text-purple-500 hover:underline"
               >
                 Odeslat znovu
               </button>

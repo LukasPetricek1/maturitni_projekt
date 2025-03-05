@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { AppContext } from "../../Context/AppContext";
-import { FaUsers, FaUserShield, FaUserPlus } from "react-icons/fa";
+import { FaUsers, FaUserPlus } from "react-icons/fa";
 import NewChat from "../../components/chat/SearchFriend";
 import { chatProps } from "../../redux-store/auth";
 
@@ -62,7 +62,7 @@ export default function CreateOrganization() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 mt-1 border rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+          className="w-full p-2 mt-1 border rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
           placeholder="Zadejte jméno..."
         />
       </div>
@@ -73,14 +73,14 @@ export default function CreateOrganization() {
           type="checkbox"
           checked={isPrivate}
           onChange={() => setIsPrivate(!isPrivate)}
-          className="mr-2 w-5 h-5"
+          className="w-5 h-5 mr-2"
         />
-        <label htmlFor="private" className="text-gray-700 font-medium">Soukormá organizace</label>
+        <label htmlFor="private" className="font-medium text-gray-700">Soukormá organizace</label>
       </div>
 
       <section className="w-full flex justify-evenly h-[70%] max-h-[70%] overflow-y-scroll">
         <div>
-          <h3 className="font-medium text-gray-700 flex items-center gap-2">
+          <h3 className="flex items-center gap-2 font-medium text-gray-700">
             <FaUsers /> Uživatelé
           </h3>
           <button
@@ -92,7 +92,7 @@ export default function CreateOrganization() {
             {showMenu.members ? (
               <p>Zavřít</p>
             ) : (
-              <p className="flex gap-2 items-center">
+              <p className="flex items-center gap-2">
                 <FaUserPlus /> Pozvat uživatele
               </p>
             )}
@@ -106,7 +106,7 @@ export default function CreateOrganization() {
               usedOnes={[...members, ...moderators, ...admins]}
             />
           )}
-          <ul className="mt-1 space-y-1 p-5">
+          <ul className="p-5 mt-1 space-y-1">
             {members.map((m, i) => (
               <li key={i} className="text-gray-600">
                 {m.name} @{m.username}
@@ -116,7 +116,7 @@ export default function CreateOrganization() {
           <hr />
         </div>
         <div>
-          <h3 className="font-medium text-gray-700 flex items-center gap-2">
+          <h3 className="flex items-center gap-2 font-medium text-gray-700">
             <FaUsers /> Moderátoři
           </h3>
           {showMenu.moderators && (
@@ -140,12 +140,12 @@ export default function CreateOrganization() {
             {showMenu.moderators ? (
               <p>Zavřít</p>
             ) : (
-              <p className="flex gap-2 items-center">
+              <p className="flex items-center gap-2">
                 <FaUserPlus /> Přidat moderátory
               </p>
             )}
           </button>
-          <ul className="mt-1 space-y-1 p-5">
+          <ul className="p-5 mt-1 space-y-1">
             {moderators.map((m, i) => (
               <li key={i} className="text-gray-600">
                 {m.name} @{m.username}
@@ -155,7 +155,7 @@ export default function CreateOrganization() {
           <hr />
         </div>
         <div>
-          <h3 className="font-medium text-gray-700 flex items-center gap-2">
+          <h3 className="flex items-center gap-2 font-medium text-gray-700">
             <FaUsers /> Admini
           </h3>
           {showMenu.admins && (
@@ -176,12 +176,12 @@ export default function CreateOrganization() {
             {showMenu.moderators ? (
               <p>Zavřít</p>
             ) : (
-              <p className="flex gap-2 items-center">
+              <p className="flex items-center gap-2">
                 <FaUserPlus /> Přidat adminy
               </p>
             )}
           </button>
-          <ul className="mt-1 space-y-1 p-5">
+          <ul className="p-5 mt-1 space-y-1">
             {admins.map((m, i) => (
               <li key={i} className="text-gray-600">
                 ${m.name} @{m.username}
@@ -194,7 +194,7 @@ export default function CreateOrganization() {
 
       <button
         onClick={createOrganization}
-        className="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 hover:scale-100"
+        className="w-full py-2 mt-4 text-white bg-purple-600 rounded-lg hover:bg-purple-700 hover:scale-100"
       >
         Vytvoři organizaci
       </button>

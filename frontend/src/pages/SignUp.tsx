@@ -9,7 +9,6 @@ import AlternativeSign from "../components/AlternativeSign";
 import Logo from "../components/Logo";
 import Toast from "../components/Toast";
 
-import ProfilePhotoUpload from "../components/signup-steps/ProfilePhotoUpload";
 import AddUserInfo from "../components/signup-steps/AddUserInfo" 
 import WelcomeScreen from "../components/signup-steps/Welcome";
 import PasswordCheck from "./PasswordCheck";
@@ -87,7 +86,7 @@ const Signup: React.FC = () => {
     
       dispatch(register(formData))
 
-      setSearchParams({ step : "upload-profile-picture"})
+      setSearchParams({ step : "add-info"})
     }else{ 
       if(!valid.name){
         setToastInfo({ message : "Vaše jméno nesplňuje daná kritéria." , type : "error"})
@@ -108,11 +107,6 @@ const Signup: React.FC = () => {
     return <Navigate to="/signup" />
   }
 
-  if(searchParams.get("step") === "upload-profile-picture"){
-    return (
-      <ProfilePhotoUpload onComplete={() => setSearchParams({ "step" : "add-info"})} />
-    )
-  }
   if(searchParams.get("step") === "add-info"){
     return (
       <AddUserInfo onComplete={() => setSearchParams({ "step" : "welcome"})} />
@@ -143,20 +137,20 @@ const Signup: React.FC = () => {
               />
       )}
     <div className="flex items-center justify-center w-screen h-full">
-      <div className="flex w-11/12 max-w-5xl h-4/5 bg-gray-900 rounded-lg shadow-lg overflow-hidden">
+      <div className="flex w-11/12 max-w-5xl overflow-hidden bg-gray-900 rounded-lg shadow-lg h-4/5">
         
         <div className={ `flex flex-1 flex-col items-center justify-center registration-background`}>
         <div className="flex justify-center p-5">
           <Logo scale={4} />
         </div>
           <h1 className="text-4xl font-bold text-white">Vítejte</h1>
-          <p className="text-gray-300 mt-4 text-center max-w-md">
+          <p className="max-w-md mt-4 text-center text-gray-300">
             Sociální platforma pro všechny, kteří mají rádi technologie
           </p>
         </div>
 
         
-        <div className="flex flex-1 flex-col justify-start p-8 overflow-y-scroll">
+        <div className="flex flex-col justify-start flex-1 p-8 overflow-y-scroll">
           <form
             onSubmit={handleSubmit}
             className="w-full max-w-md mx-auto"
@@ -226,12 +220,12 @@ const Signup: React.FC = () => {
             />
             <button
               type="submit"
-              className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+              className="w-full py-2 text-white transition bg-purple-600 rounded-lg hover:bg-purple-700"
             >
               Další
             </button>
           </form>
-          <p className="text-gray-400 text-center mt-4">
+          <p className="mt-4 text-center text-gray-400">
             Již máte účet?{" "}
             <Link to="/login" className="text-blue-400 hover:underline">
               Přihlásit se

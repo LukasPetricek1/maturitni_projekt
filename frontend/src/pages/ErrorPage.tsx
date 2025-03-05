@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useRouteError } from "react-router-dom";
 
 interface RouteError {
@@ -12,17 +12,6 @@ const ErrorPage: React.FC = () => {
   let title = "Neznámá chyba!";
   const status = error.status;
   let message = "Došlo k neočekávané chybě. Zkuste to prosím později.";
-
-  console.log(error)
-  // useEffect(() => {
-  //   const x = setTimeout(() => {
-  //     window.location.href = "/"
-  //   } , 2000)
-
-  //   return () => { 
-  //     clearTimeout(x)
-  //   }
-  // } , [])
 
   
     if (error.status === 400) {
@@ -82,15 +71,15 @@ const ErrorPage: React.FC = () => {
 
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 text-white">
+    <div className="flex items-center justify-center h-screen text-white bg-gradient-to-br from-gray-800 to-gray-900">
       <div className="text-center">
         <h1 className="text-6xl ">{title}</h1>
-        <h1 className="text-6xl font-bold m-5 text-red-500">
+        <h1 className="m-5 text-6xl font-bold text-red-500">
           {status && status}
         </h1>
-        <p className="text-2xl mb-6">{message}</p>
+        <p className="mb-6 text-2xl">{message}</p>
         <Link to="..">
-          <button className="px-6 py-3 bg-blue-600 rounded-lg text-white hover:bg-blue-700 transition-colors duration-300">
+          <button className="px-6 py-3 text-white transition-colors duration-300 bg-blue-600 rounded-lg hover:bg-blue-700">
             Domů
           </button>
         </Link>

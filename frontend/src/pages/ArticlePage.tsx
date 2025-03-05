@@ -21,7 +21,7 @@ const ArticlePage : React.FC = () => {
   const {data : articleData} = useFetch({
     fetchFn : fetchArticles,
     initialValue : [],
-    reCall : userId
+    reCall : [userId]
   })
 
   return (

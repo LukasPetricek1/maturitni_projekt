@@ -43,13 +43,11 @@ const signedRouter = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <SignedHome />,
-        // loader: homePageLoader
+        element: <SignedHome />
       },
       {
         path: "profile/:account_id",
         element: <Profile />,
-        // loader : profileLoader,
         children: [
           {
             path: "friends",
@@ -132,8 +130,7 @@ const signedRouter = createBrowserRouter([
       },
       {
         path: "/post/:post_id",
-        element: <PostPage />,
-        // loader: postPageLoader,
+        element: <PostPage />
       },
       {
         path: "/article/:article_id",

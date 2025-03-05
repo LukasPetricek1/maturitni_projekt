@@ -59,21 +59,16 @@ const MessageOptions : React.FC<Props> = ({ message, user_id , myMessage , setIs
 
   return (
     <div className="relative">
-      {/* Tlačítko pro otevření menu */}
       <button onClick={() => setIsOpen(!isOpen)}>
         <SettingsIcon />
       </button>
 
-      {/* Dropdown menu */}
       {isOpen && (
         <div ref={menuRef} className={`absolute w-40 bg-white rounded-md shadow-lg ${myMessage ? "right-5" : "left-5"} translate-y-[-50%]`}>
           <p className="text-sm font-light text-center text-black">{format(new Date(message.created_at), "dd.M - HH:mm")}</p>
           <button className="flex items-center w-full gap-2 p-2 text-center hover:bg-purple-300 hover:scale-100" onClick={() => copyMessage(message.content)}>
             <CopyIcon color="purple" /> Zkopírovat
           </button>
-          {/* <button className="flex items-center w-full gap-2 p-2 text-center hover:bg-purple-300 hover:scale-100" onClick={() => alert("Upravit")}>
-            <ReplyIcon color="purple" /> Odpovědět
-          </button> */}
           {myMessage && <button className="flex items-center w-full gap-2 p-2 text-center hover:bg-purple-300 hover:scale-100" onClick={() => updateMessage(message.content)}>
             <EditIcon color="purple" /> Upravit
           </button>}

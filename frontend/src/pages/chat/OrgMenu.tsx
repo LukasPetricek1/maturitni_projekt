@@ -3,67 +3,20 @@ import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { Outlet , useParams } from "react-router-dom";
 
-// interface channelsProps { 
-//   org : string;
-//   channels : { 
-//     id: number;
-//     name : string;
-//     active : boolean;
-//   }[]
-// }
-
-// const channels : channelsProps[] = [
-//   {
-//     org : "arg-1" , 
-//     channels : [ 
-//       { id: 1, name: "a-1", active : false },
-//       { id: 2, name: "b-2", active : false },
-//     ]
-//   } , { 
-//     org : "brg-2" ,
-//     channels : [
-//       { id: 3, name: "c-3", active : false },
-//       { id: 4, name: "d-4", active : false },
-//       { id: 5, name: "e-5", active : false }
-//     ]
-//   } , { 
-//     org : "crg-3" ,
-//     channels : [
-//       { id: 3, name: "c-5", active : false },
-//       { id: 4, name: "d-6", active : false },
-//       { id: 5, name: "e-1", active : false }
-//     ]
-//   } , { 
-//     org : "drg-4" ,
-//     channels : [
-//       { id: 3, name: "luki", active : false },
-//       { id: 4, name: "luke", active : false },
-//       { id: 5, name: "lugy", active : false }
-//     ]
-//   } , { 
-//     org : "erg-5" ,
-//     channels : [
-//       { id: 3, name: "aaa", active : false },
-//       { id: 4, name: "eee", active : false },
-//       { id: 5, name: "iii", active : false }
-//     ]
-//   }
-// ]
-
 const OrgMenu: React.FC = () => {
   const { org_id  } = useParams()
 
   return (
     <>
-        <aside className="w-64 bg-purple-900/30 flex flex-col">
-          <div className="flex items-center justify-center h-16 bg-purple-800/30 text-white font-semibold">
+        <aside className="flex flex-col w-64 bg-purple-900/30">
+          <div className="flex items-center justify-center h-16 font-semibold text-white bg-purple-800/30">
             {org_id}
           </div>
-          <h1 className="self-center text-white p-5 font-normal">*Kanály*</h1>
-          <ul className="flex-1 overflow-y-auto space-y-2 p-4">
+          <h1 className="self-center p-5 font-normal text-white">*Kanály*</h1>
+          <ul className="flex-1 p-4 space-y-2 overflow-y-auto">
             
             <li className="flex items-center gap-3 p-3 rounded-md cursor-pointer hover:bg-gray-300">
-              <div className="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center">
+              <div className="flex items-center justify-center w-10 h-10 bg-gray-400 rounded-full">
                 <FaPlus />
               </div>
               <span>Přidat</span>
