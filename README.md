@@ -1,5 +1,5 @@
-# Fadigram - sociální aplikace (lokálně nefunguje)
-## Pro Lokální spuštění je nutné mít přástup ke službám AWS S3 Cloud   a SendGrid
+# Fadigram - sociální aplikace
+## Pro Lokální spuštění je nutné mít přástup ke službám AWS S3 Cloud  a SendGrid
 
 <span style="color:red">FA</span>cebook
 <span style="color:red">DI</span>scord
