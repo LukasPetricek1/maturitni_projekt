@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { io } from "socket.io-client"
 
 import App from "./App.tsx";
 
@@ -10,8 +9,6 @@ import { store } from "./redux-store/index.ts";
 import  'react-tooltip/dist/react-tooltip.css'
 import "./index.css";
 import "./Editor.css"
-
-export const socket = io("http://localhost:3000")
 
 const root: HTMLElement = document.getElementById("root")!;
 ReactDOM.createRoot(root).render(

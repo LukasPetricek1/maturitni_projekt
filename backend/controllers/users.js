@@ -24,16 +24,12 @@ exports.discoverUserByHobby = async function(req, res){
 
 exports.updateUserInfo = async function(req, res){ 
   const { user_id, username , name , web, email, bio } = req.body;
-
   try {
-    
     await updateUserInfoFunction(user_id, username , name , web , email , bio)
     if(email){ 
       const access_token = generateAccessToken(email)
       res.clearCookie("jwt_token" , { httpOnly : true})
       res.cookie("jwt_token" , access_token , { httpOnly : true })
-
-      
     }
     res.send("updated")
   } catch (error) {

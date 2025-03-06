@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`users` (
   UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 45
+AUTO_INCREMENT = 49
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`articles` (
     FOREIGN KEY (`user_id`)
     REFERENCES `social_app`.`users` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 16
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -137,12 +137,36 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `social_app`.`channels` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(90) NOT NULL,
-  `organization_id` INT NOT NULL,
+  `organization_id` INT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_channels_organization1_idx` (`organization_id` ASC) VISIBLE,
   CONSTRAINT `fk_channels_organization1`
     FOREIGN KEY (`organization_id`)
     REFERENCES `social_app`.`organizations` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 18
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `social_app`.`channel_users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `social_app`.`channel_users` (
+  `user_id` INT NOT NULL,
+  `channel_id` INT NOT NULL,
+  PRIMARY KEY (`user_id`, `channel_id`),
+  INDEX `fk_channel_users_channel` (`channel_id` ASC) VISIBLE,
+  CONSTRAINT `fk_channel_users_channel`
+    FOREIGN KEY (`channel_id`)
+    REFERENCES `social_app`.`channels` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_channel_users_user`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `social_app`.`users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -170,7 +194,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`friends` (
     REFERENCES `social_app`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 16
+AUTO_INCREMENT = 29
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -184,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`hobbies` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `name` (`name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 82
+AUTO_INCREMENT = 96
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -200,6 +224,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`messages` (
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NULL DEFAULT NULL,
   `status` ENUM('read', 'unread') NOT NULL,
+  `removed` TINYINT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   INDEX `fk_messages_channels1_idx` (`channels_id` ASC) VISIBLE,
   INDEX `fk_messages_user1_idx` (`user_id` ASC) VISIBLE,
@@ -210,6 +235,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`messages` (
     FOREIGN KEY (`user_id`)
     REFERENCES `social_app`.`users` (`id`))
 ENGINE = InnoDB
+AUTO_INCREMENT = 57
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -253,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`posts` (
     FOREIGN KEY (`user_id`)
     REFERENCES `social_app`.`users` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 8
+AUTO_INCREMENT = 9
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -290,6 +316,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`post_likes` (
   `user_id` INT NOT NULL,
   `post_id` INT NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE INDEX `user_id_2` (`user_id` ASC, `post_id` ASC) VISIBLE,
   INDEX `user_id` (`user_id` ASC) VISIBLE,
   INDEX `post_id` (`post_id` ASC) VISIBLE,
   CONSTRAINT `post_likes_ibfk_1`
@@ -301,6 +328,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`post_likes` (
     REFERENCES `social_app`.`posts` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
+AUTO_INCREMENT = 139
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -358,7 +386,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`user_hobbies` (
     FOREIGN KEY (`user_id`)
     REFERENCES `social_app`.`users` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 47
+AUTO_INCREMENT = 61
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -374,7 +402,7 @@ CREATE TABLE IF NOT EXISTS `social_app`.`verification_codes` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email` (`email` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 16
+AUTO_INCREMENT = 21
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 

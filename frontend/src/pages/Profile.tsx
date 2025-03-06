@@ -30,7 +30,6 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import FriendOptions from "../components/friends/FriendOptions";
 import ImageComponent from "../components/ImageComponent";
-import { socket } from "../main";
 
 export interface userProps {
   email: string;
